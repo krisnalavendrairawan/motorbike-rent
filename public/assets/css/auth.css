@@ -1,0 +1,29 @@
+:root {
+    --primary: #2B4276;
+    --primary-dark: #1f2e53;
+}
+
+.login100-form {
+    padding-top: 90px;
+}
+
+/* Button */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
+}
+
+@media (max-width: 576px) {
+    .header {
+        text-align: center;
+    }
+
+    .login100-form {
+        padding-top: 30px;
+    }
+}

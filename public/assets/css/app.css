@@ -1,0 +1,139 @@
+/* Form */
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Bold.ttf') format('truetype');
+    font-weight: bold;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: 'Open Sans';
+    src: url('../fonts/OpenSans-Italic.ttf') format('truetype');
+    font-weight: normal;
+    font-style: italic;
+}
+
+body {
+    font-family: 'Open Sans', sans-serif;
+        src: url('../fonts/OpenSans-SemiBold.ttf') format('truetype');
+}
+.form-control::-moz-placeholder,
+.select2-search__field::-moz-placeholder {
+    color: #acacac;
+}
+.form-control:-moz-placeholder,
+.select2-search__field:-moz-placeholder {
+    color: #acacac;
+}
+.form-control::-webkit-input-placeholder,
+.select2-search__field::-webkit-input-placeholder {
+    color: #acacac;
+}
+.form-control:-ms-input-placeholder,
+.select2-search__field:-ms-input-placeholder {
+    color: #acacac;
+}
+.form-control {
+    border: 1px solid #dedcdc;
+}
+
+/* DataTables */
+table.dataTable {
+    border-bottom: 1px solid #dfdfdf;
+}
+.dataTable td,
+.dataTable th {
+    padding: 0.75rem;
+    line-height: 20px !important;
+}
+.dataTables_filter {
+    float: left;
+    margin-right: 15px !important;
+}
+.dataTables_filter input {
+    height: 35px;
+}
+.dataTables_paginate {
+    float: left;
+    margin-top: 15px !important;
+}
+.dataTables_length {
+    margin-top: 17px;
+}
+.dataTables_length label {
+    background: #eee;
+    font-size: 13px;
+    padding-right: 10px;
+}
+.dataTables_length select {
+    height: 40px !important;
+    width: 70px !important;
+    margin-right: 5px;
+}
+
+/* Loading*/
+.loading-option {
+    position: absolute;
+    z-index: 999;
+    margin-top: -25px;
+    margin-left: 5px;
+    background: #ffffff;
+    padding-left: 5px;
+    padding-right: 30px;
+}
+
+.loading-option img {
+    height: 20px;
+}
+
+/* Text Primary */
+
+.text-purple {
+    color: #6f42c1;
+}
+
+.breadcrumb {
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    list-style: none;
+    /* Menghilangkan bullet/titik */
+}
+
+.breadcrumb-item {
+    list-style: none;
+    /* Menghilangkan bullet/titik */
+}
+
+.profile {
+        list-style: none;
+}
+.breadcrumb-item,
+.breadcrumb-item a {
+    color: rgba(255, 255, 255, 0.85);
+    font-size: 0.875rem;
+}
+
+/* Tambahkan ini untuk mengubah warna teks pada item active */
+.breadcrumb-item.active {
+    color: rgba(255, 255, 255, 0.85) !important;
+    /* Menggunakan !important untuk memastikan override */
+}
+
+/* Mengubah warna separator "/" */
+.breadcrumb-item+.breadcrumb-item::before {
+    color: rgba(255, 255, 255, 0.85);
+}
+        .page-title-box {
+
+padding: 1.5rem;
+border-radius: 0.375rem;
+box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+}
