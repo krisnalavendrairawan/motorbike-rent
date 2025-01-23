@@ -111,6 +111,17 @@ return [
     'transfer' => 'Transfer',
     'qris' => 'QRIS',
     'payment_type' => 'Tipe Pembayaran',
+    'report' => 'Laporan',
+    'monthly_report' => 'Laporan Bulanan',
+    'yearly_report' => 'Laporan Tahunan',
+    'bike_report' => 'Laporan Motor',
+    'total_income' => 'Total Pendapatan',
+    'total_expense' => 'Total Pengeluaran',
+    'expense_summary' => 'Ringkasan Pengeluaran',
+    'income_summary' => 'Ringkasan Pendapatan',
+    'total_transaction' => 'Total Transaksi',
+    'total_service' => 'Total Service',
+
 
     // Action
     'add' => 'Add',

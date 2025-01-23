@@ -33,7 +33,7 @@ class MotorController extends Controller
         }
 
         if ($request->type) {
-            $query->where('type', $request->type); 
+            $query->where('type', $request->type);
         }
 
         if ($request->status) {
@@ -59,17 +59,49 @@ class MotorController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $motor = Motor::findOrFail($id);
-        $type = Common::option('bike_type');
-        $brand = Brand::all();
+        $motor = Motor::with([
+            'rental' => function ($query) {
+                $query->where('status', 'finished')
+                ->orderBy('end_date', 'desc')
+                ->with('customer');
+            },
+            'services'
+        ])->findOrFail($id);
+
+        $rentalHistory = $motor->rental()->where('status', 'finished')
+        ->orderBy('end_date', 'desc')
+        ->paginate(5, ['*'], 'page');
+
+        $serviceHistory = $motor->services()
+            ->orderBy('service_date', 'desc')
+            ->paginate(5, ['*'], 'service_page');
+
+        // Handle AJAX requests
+        if ($request->ajax()) {
+            if ($request->has('rental_page')) {
+                return view('backend.bike.partials.rental-history', [
+                    'rentalHistory' => $rentalHistory,
+                    'motor' => $motor
+                ])->render();
+            }
+            if ($request->has('service_page')) {
+                return view('backend.bike.partials.service-history', [
+                    'serviceHistory' => $serviceHistory,
+                    'motor' => $motor
+                ])->render();
+            }
+        }
+
         return view($this->path . 'show', [
             'title' => $this->title,
             'icon' => $this->icon,
-            'brand' => $brand,
-            'type' => $type,
+            'brand' => Brand::all(),
+            'type' => Common::option('bike_type'),
             'motor' => $motor,
+            'rentalHistory' => $rentalHistory,
+            'serviceHistory' => $serviceHistory,
         ]);
     }
 
@@ -117,7 +149,7 @@ class MotorController extends Controller
     {
         $motor = Motor::findOrFail($id);
 
-        $motor->fill($request->validated()); 
+        $motor->fill($request->validated());
         if ($request->hasFile('image')) {
             $motor->image = $request->file('image')->store('images', 'public');
         }

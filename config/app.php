@@ -183,6 +183,7 @@ return [
         Illuminate\View\ViewServiceProvider::class,
         Spatie\Permission\PermissionServiceProvider::class,
         BladeUI\Heroicons\BladeHeroiconsServiceProvider::class,
+        Barryvdh\Debugbar\ServiceProvider::class,
 
         /*
          * Package Service Providers...
@@ -211,7 +212,7 @@ return [
     */
 
     'aliases' => Facade::defaultAliases()->merge([
-        // 'ExampleClass' => App\Example\ExampleClass::class,
+        'Debugbar' => Barryvdh\Debugbar\Facade::class,
     ])->toArray(),
 
 ];

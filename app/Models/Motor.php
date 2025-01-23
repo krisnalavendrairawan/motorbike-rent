@@ -52,12 +52,17 @@ class Motor extends Model
         return $this->hasMany(Service::class);
     }
 
-    public function Rental()
+    public function rental()
     {
-        return $this->belongsTo(Rental::class);
+        return $this->hasMany(Rental::class);
     }
 
     public function activeRentals()
+    {
+        return $this->hasMany(Rental::class);
+    }
+
+    public function rentals()
     {
         return $this->hasMany(Rental::class);
     }

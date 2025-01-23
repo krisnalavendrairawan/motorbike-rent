@@ -3,7 +3,8 @@
         <div class="row">
             <div class="col-md-4 mb-4">
                 <h5>About Us</h5>
-                <p>Your trusted motorcycle rental service providing quality bikes for your journey.</p>
+                <p>Layanan sewa sepeda motor terpercaya Anda yang menyediakan sepeda berkualitas untuk perjalanan Anda.
+                </p>
             </div>
             <div class="col-md-4 mb-4">
                 <h5>Quick Links</h5>

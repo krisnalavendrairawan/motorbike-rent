@@ -55,7 +55,7 @@
                                                     <i class='bx bx-detail'></i> Detail
                                                 </a>
                                                 @if (
-                                                    ($transaction->status === 'pending' && $transaction->payment_type === 'qris') ||
+                                                    ($transaction->status === 'pending' && $transaction->payment_type === 'Qris') ||
                                                         ($transaction->status === 'pending' && $transaction->payment_type === 'Transfer'))
                                                     <a href="{{ route('transaction.show', $transaction->id) }}"
                                                         class="btn btn-sm btn-primary mx-2">

@@ -10,6 +10,9 @@ use Illuminate\Support\Facades\Log;
 
 class TransactionController extends Controller
 {
+    private $title = 'Transaction';
+    private $icon = 'bx bxs-credit-card';
+
     protected $midtransService;
     public function __construct(MidtransService $midtransService)
     {

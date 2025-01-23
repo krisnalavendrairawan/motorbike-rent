@@ -16,6 +16,9 @@
     <div class="card">
         <div class="card-body">
             <div class="d-flex flex-row-reverse bd-highlight">
+                <a href="#" class="btn btn-outline-danger" id="exportButton">
+                    <i class="bx bxs-file-pdf me-1"></i>Export PDF
+                </a>
             </div>
 
             <div class="table-responsive">
@@ -86,6 +89,53 @@
                         {{ __('label.close') }}
                     </button>
                 </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="exportModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+                <div class="modal-header bg-primary">
+                    <h5 class="modal-title text-white fw-semibold">Filter Export PDF</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                        aria-label="Close"></button>
+                </div>
+                <form id="exportForm" action="{{ route('return.export-pdf') }}" method="GET">
+                    <div class="modal-body p-4">
+                        <div class="mb-3">
+                            <label class="form-label">Filter Berdasarkan</label>
+                            <select class="form-select" name="filter_type" id="filterType">
+                                <option value="date">Tanggal</option>
+                                <option value="month">Bulan</option>
+                            </select>
+                        </div>
+
+                        <div id="dateFilter">
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Mulai</label>
+                                <input type="date" class="form-control" name="start_date">
+                            </div>
+                            <div class="mb-3">
+                                <label class="form-label">Tanggal Akhir</label>
+                                <input type="date" class="form-control" name="end_date">
+                            </div>
+                        </div>
+
+                        <div id="monthFilter" style="display: none;">
+                            <div class="mb-3">
+                                <label class="form-label">Bulan</label>
+                                <input type="month" class="form-control" name="month">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">
+                            {{ __('label.close') }}
+                        </button>
+                        <button type="submit" class="btn btn-primary">Export PDF</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -246,6 +296,48 @@
                 );
 
                 $('#showReturnModal').modal('show');
+            });
+
+            $('#exportButton').click(function(e) {
+                e.preventDefault();
+                $('#exportModal').modal('show');
+            });
+
+            // Handle filter type change
+            $('#filterType').change(function() {
+                if ($(this).val() === 'date') {
+                    $('#dateFilter').show();
+                    $('#monthFilter').hide();
+                } else {
+                    $('#dateFilter').hide();
+                    $('#monthFilter').show();
+                }
+            });
+
+            // Handle form submit
+            $('#exportForm').submit(function(e) {
+                e.preventDefault();
+
+                // Basic validation
+                if ($('#filterType').val() === 'date') {
+                    let startDate = $('input[name="start_date"]').val();
+                    let endDate = $('input[name="end_date"]').val();
+
+                    if (!startDate || !endDate) {
+                        alert('Silakan pilih tanggal mulai dan tanggal akhir');
+                        return;
+                    }
+                } else {
+                    let month = $('input[name="month"]').val();
+                    if (!month) {
+                        alert('Silakan pilih bulan');
+                        return;
+                    }
+                }
+
+                let formData = $(this).serialize();
+                window.location.href = `{{ route('return.export-pdf') }}?${formData}`;
+                $('#exportModal').modal('hide');
             });
 
             $($.fn.dataTable.tables(true)).css('width', '100%');

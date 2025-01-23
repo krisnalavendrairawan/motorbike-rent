@@ -390,7 +390,7 @@
                     statusText = 'Selesai';
                     break;
                 case 'pending':
-                    statusBadgeClass = 'bg-pending';
+                    statusBadgeClass = 'bg-warning';
                     statusText = 'Pending';
                     break;
                 case 'returned':

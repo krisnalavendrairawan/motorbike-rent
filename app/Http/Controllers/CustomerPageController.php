@@ -172,11 +172,12 @@ class CustomerPageController extends Controller
                 'payment_type' => $rental->payment_type,
                 'order_id' => $orderId,
                 'transaction_time' => now(),
-                'snap_token' => null
+                // 'transaction_time' => $startDate,
+                'snap_token' => null,
+                'total_amount' => $rental->total_price,
             ]);
 
-            // Generate Snap Token jika metode pembayaran adalah QRIS atau Transfer
-            if (in_array($request->payment_type, ['qris', 'Transfer'])) {
+            if (in_array($request->payment_type, ['Qris', 'Transfer'])) {
                 $midtransService = app(MidtransService::class);
                 $snapToken = $midtransService->createTransaction($transaction);
                 $transaction->update(['snap_token' => $snapToken]);
@@ -187,7 +188,7 @@ class CustomerPageController extends Controller
             return redirect()->route('transaction.index')
                 ->with('success', 'Rental request submitted successfully. Please complete your payment.');
         } catch (\Exception $e) {
-            DB::rollBack(); 
+            DB::rollBack();
             return redirect()->back()
                 ->withInput()
                 ->with('error', $e->getMessage());

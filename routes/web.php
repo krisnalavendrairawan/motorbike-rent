@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BikeReportController;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BrandController;
@@ -9,6 +10,7 @@ use App\Http\Controllers\CustomerPageController;
 use App\Http\Controllers\MotorController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
@@ -46,6 +48,7 @@ Route::post('/logout-customer', [AuthController::class, 'logoutCustomer'])->name
 Route::middleware(['auth'])->group(function () {
     Route::get('/customer/rental/{id}', [CustomerPageController::class, 'createRental'])->name('customer.rental');
     Route::post('/customer/rental', [CustomerPageController::class, 'store'])->name('customer.rental.store');
+    Route::post('/rental/confirm-payment', [RentalController::class, 'confirmPayment'])->name('rental.confirm-payment');
 
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transaction.index');
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transaction.show');
@@ -85,8 +88,20 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('rental/create/{motor}', [RentalController::class, 'create'])->name('rental.create');
     Route::get('list-rental', [RentalController::class, 'showListRental'])->name('list.rental');
     Route::post('rental/datatable', [RentalController::class, 'datatable'])->name('rental.datatable');
-    Route::post('/rental/confirm-payment', [RentalController::class, 'confirmPayment'])->name('rental.confirm-payment');
 
     Route::resource('return', ReturnController::class);
     Route::post('return/datatable', [ReturnController::class, 'datatable'])->name('return.datatable');
+    Route::get('admin/return/export-pdf', [ReturnController::class, 'exportPdf'])->name('return.export-pdf');
+
+    Route::get('/report/transactions', [ReportController::class, 'transactionReport'])
+        ->name('monthly-report.index');
+
+    Route::get('/monthly-report/transaction-pagination', [ReportController::class, 'transactionPagination'])
+        ->name('monthly-report.transaction-pagination');
+    Route::get('/monthly-report/service-pagination', [ReportController::class, 'servicePagination'])
+        ->name('monthly-report.service-pagination');
+    Route::get('/monthly-report/export-pdf', [ReportController::class, 'exportPDF'])
+        ->name('monthly-report.export-pdf');
+
+    Route::get('/bike-report', [BikeReportController::class, 'index'])->name('bike-report');
 });

@@ -90,13 +90,20 @@ return [
     'list_bike' => 'List Motor',
     'service' => 'Service',
     'create_service' => 'Create Service Bike',
-    'edit_service' =>'Edit Service Bike',
+    'edit_service' => 'Edit Service Bike',
     'service_date' => 'Service Date',
     'service_type' => 'Service Type',
     'cost' => 'Cost',
     'service_detail' => 'Service Details',
     'rental_detail' => 'Rental Detail',
     'payment_type' => 'Payment Type',
+    'report' => 'Report',
+    'total_income' => 'Total income',
+    'total_expense' => 'Total Expense',
+    'expense_summary' => 'Expense Summary',
+    'income_summary' => 'Income Summary',
+    'total_transaction' => 'Total Transactions',
+    'total_service' => 'Total Services',
 
 
     // Action

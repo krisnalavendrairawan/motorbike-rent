@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Document</title>
+    <title>@yield('title') - {{ Config::get('app.name') }}</title>
 
     <!-- Favicon -->
 
@@ -152,7 +152,7 @@
             </div>
         </div>
     </div>
-    
+
     <script src="{{ asset('assets/js/jquery-3.6.0.min.js') }}"></script>
 
     <script src="{{ asset('assets/vendor/libs/jquery/jquery.js') }}"></script>

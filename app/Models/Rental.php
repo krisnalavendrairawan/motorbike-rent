@@ -57,8 +57,8 @@ class Rental extends Model
         return $this->belongsTo(Returns::class);
     }
 
-    public function transactions()
+    public function transaction()
     {
-        return $this->hasMany(Transaction::class);
+        return $this->hasOne(Transaction::class);
     }
 }

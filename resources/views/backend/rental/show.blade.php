@@ -18,21 +18,20 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
-            <div class="col-12 col-lg-6 mb-4">
-                <div class="card h-100">
-                    <div class="position-relative">
-                        <img src="{{ asset('storage/' . $motor->image) }}" alt="{{ $motor->name }}" class="card-img-top"
-                            style="height: 400px; object-fit: cover;">
-                        <div class="position-absolute top-0 end-0 p-3">
+            <div class="col-12 col-lg-6">
+                <div class="card card-motor">
+                    <div class="card-image-wrapper" style="height: 550px;">
+                        <img src="{{ asset('storage/' . $motor->image) }}" alt="{{ $motor->name }}" class="card-img">
+                        <div class="status-badge">
                             <span class="badge bg-{{ $motor->status === 'ready' ? 'success' : 'danger' }} fs-6">
                                 {{ $motor->status === 'ready' ? 'Ready' : 'Not Ready' }}
                             </span>
                         </div>
                     </div>
                     <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center">
-                            <a href="{{ route('rental.index') }}" class="btn btn-outline-danger">
-                                Kembali
+                        <div class="d-flex justify-content-between align-items-center gap-3">
+                            <a href="{{ route('bike.index') }}" class="btn btn-outline-secondary">
+                                <i class='bx bx-arrow-back me-2'></i> Kembali
                             </a>
                         </div>
                     </div>
@@ -143,25 +142,54 @@
     <style>
         .card {
             border: none;
-            box-shadow: 0 0 0.875rem 0 rgba(33, 37, 41, .05);
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border-radius: 1rem;
+            box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
         }
 
         .card:hover {
             transform: translateY(-5px);
-            box-shadow: 0 0.5rem 1.5rem rgba(33, 37, 41, .1);
+            box-shadow: 0 1rem 2rem rgba(0, 0, 0, 0.1);
         }
 
-        .bg-light {
-            background-color: #f8f9fa !important;
+        /* Motor Card Specific Styles */
+        .card-motor {
+            background: #fff;
         }
 
-        .rounded-3 {
-            border-radius: 0.5rem !important;
+        .card-image-wrapper {
+            position: relative;
+            height: 400px;
+            overflow: hidden;
         }
 
-        .bx {
-            color: #696cff;
+        .card-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            object-position: center;
+            transition: transform 0.3s ease;
+        }
+
+        .card-motor:hover .card-img {
+            transform: scale(1.05);
+        }
+
+        .status-badge {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            z-index: 2;
+        }
+
+        .status-badge .badge {
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 0.25rem 0.5rem rgba(0, 0, 0, 0.1);
         }
     </style>
 @endsection

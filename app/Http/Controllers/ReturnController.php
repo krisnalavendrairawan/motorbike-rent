@@ -8,6 +8,8 @@ use App\Models\Returns;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Crypt;
 use Illuminate\Support\Facades\DB;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Carbon\Carbon;
 
 class ReturnController extends Controller
 {
@@ -24,6 +26,15 @@ class ReturnController extends Controller
             'icon' => $this->icon,
             'rental' => $rental,
             'rentalCount' => $rentalCount,
+        ]);
+    }
+
+    public function show($id)
+    {
+        $return = Returns::with(['rental.customer', 'rental.motor'])->findOrFail($id);
+        return response()->json([
+            'status' => 'success',
+            'data' => $return
         ]);
     }
 
@@ -63,7 +74,6 @@ class ReturnController extends Controller
             $push['customer_name'] = $return->rental->customer->name ?? 'N/A';
             $push['motor_name'] = $return->rental->motor->name ?? 'N/A';
             $push['motor_image'] = $return->rental->motor->image ?? 'N/A';
-            // $push['total_price'] = $return->rental->total_price ?? 0;
             $push['total_price'] = 'Rp ' . number_format($return->rental->total_price, 0, ',', '.');
             $push['formatted_return_date'] = \Carbon\Carbon::parse($return->return_date)->isoFormat('D MMMM Y HH:mm');
             array_push($returns_arr, $push);
@@ -110,5 +120,63 @@ class ReturnController extends Controller
                 'message' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $query = Returns::with(['rental.customer', 'rental.motor'])
+        ->orderBy('created_at', 'desc');
+
+        // Apply filters
+        if ($request->filter_type === 'date') {
+            if ($request->start_date && $request->end_date) {
+                $query->whereBetween('return_date', [
+                    Carbon::parse($request->start_date)->startOfDay(),
+                    Carbon::parse($request->end_date)->endOfDay()
+                ]);
+            }
+        } else if ($request->filter_type === 'month') {
+            if ($request->month) {
+                $date = Carbon::createFromFormat('Y-m', $request->month);
+                $query->whereYear('return_date', $date->year)
+                ->whereMonth('return_date', $date->month);
+            }
+        }
+
+        $returns = $query->get()
+        ->map(function ($return) {
+            return [
+                'customer_name' => $return->rental->customer->name ?? 'N/A',
+                'motor_name' => $return->rental->motor->name ?? 'N/A',
+                'return_date' => Carbon::parse($return->return_date)->isoFormat('D MMMM Y HH:mm'),
+                'total_price' => 'Rp ' . number_format($return->rental->total_price, 0, ',', '.'),
+                'status' => $return->status === 'finished' ? 'Selesai' : 'Disewa'
+            ];
+        });
+
+        $pdf = PDF::loadView('backend.return.pdf', [
+            'returns' => $returns,
+            'title' => $this->title,
+            'date' => Carbon::now()->isoFormat('D MMMM Y HH:mm'),
+            'filter_info' => $this->getFilterInfo($request),
+            'has_data' => $returns->count() > 0
+        ]);
+
+        return $pdf->download('returns-' . Carbon::now()->format('Y-m-d') . '.pdf');
+    }
+
+    private function getFilterInfo(Request $request)
+    {
+        if ($request->filter_type === 'date') {
+            if ($request->start_date && $request->end_date) {
+                return 'Periode: ' . Carbon::parse($request->start_date)->isoFormat('D MMMM Y') .
+                    ' - ' . Carbon::parse($request->end_date)->isoFormat('D MMMM Y');
+            }
+        } else if ($request->filter_type === 'month') {
+            if ($request->month) {
+                return 'Periode: ' . Carbon::createFromFormat('Y-m', $request->month)->isoFormat('MMMM Y');
+            }
+        }
+        return 'Semua Periode';
     }
 }

@@ -36,6 +36,8 @@
             </a>
         </li>
 
+        {{-- Motor --}}
+
         <li class="menu-item">
             <a href="javascript:void(0);" class="menu-link menu-toggle">
                 <i class="menu-icon tf-icons bx bx-layout"></i>
@@ -93,7 +95,43 @@
             </a>
         </li>
 
+        {{-- Motor --}}
+        <li class="menu-header small text-uppercase">
+            <span class="menu-header-text">{{ __('label.report') }}</span>
+        </li>
 
+        <li class="menu-item">
+            <a href="javascript:void(0);" class="menu-link menu-toggle">
+                <i class="menu-icon tf-icons bx bxs-report"></i>
+                <div data-i18n="Layouts">{{ __('label.report') }}</div>
+            </a>
+
+            <ul class="menu-sub">
+
+                <!-- Monthly Report -->
+                <li class="menu-item {{ request()->routeIs('monthly-report.*') ? 'active' : '' }}">
+                    <a href="{{ route('monthly-report.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bxs-calendar"></i>
+                        <div data-i18n="Analytics">{{ __('label.monthly_report') }}</div>
+                    </a>
+                </li>
+                <!-- Bike -->
+                <li class="menu-item {{ request()->routeIs('bike-report.*') ? 'active' : '' }}">
+                    <a href="{{ route('bike-report') }}" class="menu-link">
+                        
+                        <i class="menu-icon tf-icons bx bxs-bar-chart-square"></i>
+                        <div data-i18n="Analytics">{{ __('label.bike_report') }}</div>
+                    </a>
+                </li>
+                <!-- Services -->
+                <li class="menu-item {{ request()->routeIs('service.*') ? 'active' : '' }}">
+                    <a href="{{ route('service.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bxs-cog"></i>
+                        <div data-i18n="Analytics">{{ __('label.service') }}</div>
+                    </a>
+                </li>
+            </ul>
+        </li>
 
     </ul>
 </aside>
