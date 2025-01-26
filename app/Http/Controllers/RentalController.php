@@ -12,6 +12,7 @@ use App\Http\Requests\RentalRequest;
 use App\Models\Transaction;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class RentalController extends Controller
 {
@@ -147,7 +148,6 @@ class RentalController extends Controller
     public function create($motorId)
     {
         $motor = Motor::findOrFail($motorId);
-
         if ($motor->status !== 'ready') {
             return redirect()->route('rental.index')
                 ->with('error', 'Motor is not available for rental');
@@ -173,9 +173,9 @@ class RentalController extends Controller
 
     public function store(RentalRequest $request)
     {
+        
         try {
             DB::beginTransaction();
-
             $startDate = Carbon::parse($request->start_date);
             $endDate = Carbon::parse($request->end_date);
 
@@ -211,9 +211,9 @@ class RentalController extends Controller
             }
 
             $expectedPrice = $motor->price * $totalDays;
-            // if ($request->total_price != $expectedPrice) {
-            //     throw new \Exception('Invalid total price calculation');
-            // }
+            if ($request->total_price != $expectedPrice) {
+                throw new \Exception('Invalid total price calculation');
+            }
 
             $rental = Rental::create([
                 'customer_id' => $request->customer_id,
@@ -222,6 +222,7 @@ class RentalController extends Controller
                 'end_date' => $endDate,
                 'total_price' => $request->total_price,
                 'description' => $request->description,
+                'payment_type' => $request->payment_type,
                 'status' => 'rent',
                 'created_by' => auth()->id(),
             ]);
@@ -229,11 +230,12 @@ class RentalController extends Controller
             $motor->update(['status' => 'not_ready']);
 
             DB::commit();
-
             return redirect()->route('list.rental')
                 ->with('success', 'Rental created successfully');
         } catch (\Exception $e) {
             DB::rollBack();
+            Log::error('Rental Creation Error: ' . $e->getMessage());
+
             return redirect()->back()
                 ->withInput()
                 ->with('error', $e->getMessage());
@@ -244,6 +246,8 @@ class RentalController extends Controller
     {
         try {
             DB::beginTransaction();
+            Log::info('Start Date: ' . $request->start_date);
+            Log::info('End Date: ' . $request->end_date);
 
             $rental = Rental::findOrFail($request->rental_id);
 
@@ -272,6 +276,8 @@ class RentalController extends Controller
                 'message' => 'Payment confirmed successfully'
             ]);
         } catch (\Exception $e) {
+            Log::error('Rental Creation Error: ' . $e->getMessage());
+            Log::error('Error Trace: ' . $e->getTraceAsString());
             DB::rollBack();
             return response()->json([
                 'status' => 'error',

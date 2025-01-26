@@ -30,7 +30,7 @@
                     <div class="col-md-4 align-self-end">
                         <button type="submit" class="btn btn-primary">Filter</button>
                         <a href="{{ route('monthly-report.export-pdf', ['month' => $selectedMonth, 'year' => $selectedYear]) }}"
-                            class="btn btn-danger">
+                            class="btn btn-outline-danger">
                             <i class="bx bxs-file-pdf"></i> Export PDF
                         </a>
                     </div>

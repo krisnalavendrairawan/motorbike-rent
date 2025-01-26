@@ -10,6 +10,7 @@ use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Redirect;
 use App\Helpers\Common;
 use App\Http\Requests\CustomerRequest;
+use App\Models\Rental;
 
 class CustomerController extends Controller
 {
@@ -75,10 +76,21 @@ class CustomerController extends Controller
 
     public function show(User $customer)
     {
+        $rentalHistory = Rental::where('customer_id', $customer->id)
+            ->with('motor')
+            ->latest()
+            ->get();
+
+        $totalSpent = Rental::where('customer_id', $customer->id)
+            // ->where('status', 'rent')
+            ->sum('total_price');
+
         return view($this->path . 'show', [
             'title' => $this->title,
             'icon' => $this->icon,
             'customer' => $customer,
+            'rentalHistory' => $rentalHistory,
+            'totalSpent' => $totalSpent,
         ]);
     }
 
@@ -103,7 +115,7 @@ class CustomerController extends Controller
         return Redirect::route('customer.index')->with('success', __('message.create_success', ['label' => __($this->title)]));
     }
 
-    public function edit(Request $request, User $customer)  
+    public function edit(Request $request, User $customer)
     {
         $genders = Common::option('gender');
         return view($this->path . 'edit', [
@@ -121,7 +133,7 @@ class CustomerController extends Controller
         if (!empty($request->password)) {
             $data['password'] = bcrypt($request->password);
         } else {
-            unset($data['password']); 
+            unset($data['password']);
         }
 
         $customer->update($data);
@@ -137,7 +149,7 @@ class CustomerController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Data berhasil dihapus'
-            ], 200); 
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\Transaction;
 use App\Models\Service;
-use Illuminate\Http\Request;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Log;
 
-class ReportController extends Controller
+class MonthlyReportController extends Controller
 {
-    private $title = 'Transaction Report';
+    private $title = 'Monthly Report';
     private $icon = 'bx bxs-report';
     private $path = 'backend.report.';
 
@@ -29,7 +29,7 @@ class ReportController extends Controller
         $transactions = $query->get();
 
         $serviceQuery = Service::with('motor')
-        ->whereRaw('YEAR(service_date) = ?', [$selectedYear])
+            ->whereRaw('YEAR(service_date) = ?', [$selectedYear])
             ->whereRaw('MONTH(service_date) = ?', [$selectedMonth]);
 
         $serviceExpenses = $serviceQuery->get();

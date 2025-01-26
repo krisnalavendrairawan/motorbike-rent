@@ -99,13 +99,13 @@ return [
     'return' => 'Pengembalian',
     'return_date' => 'Tanggal Pengembalian',
     'list_bike' => 'List Motor',
-    'service' => 'Service',
+    'service' => 'Perawatan',
     'create_service' => 'Buat Service Motor',
     'edit_service' => 'Edit Service Motor',
     'service_date' => 'Tanggal Service',
-    'service_type' => 'Tipe Service',
+    'service_type' => 'Tipe Perawatan',
     'cost' => 'Biaya',
-    'service_detail' => 'Detail Service',
+    'service_detail' => 'Detail Perawatan',
     'rental_detail' => 'Detail Rental',
     'cash' => 'Cash',
     'transfer' => 'Transfer',
@@ -120,7 +120,7 @@ return [
     'expense_summary' => 'Ringkasan Pengeluaran',
     'income_summary' => 'Ringkasan Pendapatan',
     'total_transaction' => 'Total Transaksi',
-    'total_service' => 'Total Service',
+    'total_service' => 'Total Perawatan',
 
 
     // Action

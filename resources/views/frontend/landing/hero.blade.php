@@ -11,7 +11,7 @@
                     <div class="hero-content-animate">
                         <h1 class="display-4 fw-bold mb-2 text-dark">
                             Selamat datang di<br>
-                            website resmi <span style="color: #FFB800">Motorin Rental</span> Jatinangor
+                            website resmi <span style="color: #FFB800">Motorin Rental</span> Yogyakarta
                         </h1>
 
                         <p class="lead mb-4 text-secondary">

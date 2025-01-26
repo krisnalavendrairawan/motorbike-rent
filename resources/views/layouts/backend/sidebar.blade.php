@@ -1,10 +1,13 @@
 <aside id="layout-menu" class="layout-menu menu-vertical menu bg-menu-theme">
     <div class="app-brand demo">
         <a href="{{ route('dashboard.index') }}" class="app-brand-link">
-            <img src="{{ asset('assets/img/avatars/motorinlogo.png') }}" alt="RapidRide Logo" class="logoMotorin"
-                height="60" width="70" />
+            {{-- <img src="{{ asset('assets/img/avatars/motorinlogo.png') }}" alt="RapidRide Logo" class="logoMotorin"
+                height="60" width="70" /> --}}
 
             <span class="app-brand-text demo menu-text fw-bolder ">Motorin</span>
+            <a href="javascript:void(0)" class="layout-menu-toggle d-block d-xl-none">
+                <i class='bx bxs-chevrons-left mt-2 ms-1'></i>
+            </a>
         </a>
     </div>
 
@@ -118,16 +121,16 @@
                 <!-- Bike -->
                 <li class="menu-item {{ request()->routeIs('bike-report.*') ? 'active' : '' }}">
                     <a href="{{ route('bike-report') }}" class="menu-link">
-                        
+
                         <i class="menu-icon tf-icons bx bxs-bar-chart-square"></i>
                         <div data-i18n="Analytics">{{ __('label.bike_report') }}</div>
                     </a>
                 </li>
                 <!-- Services -->
-                <li class="menu-item {{ request()->routeIs('service.*') ? 'active' : '' }}">
-                    <a href="{{ route('service.index') }}" class="menu-link">
-                        <i class="menu-icon tf-icons bx bxs-cog"></i>
-                        <div data-i18n="Analytics">{{ __('label.service') }}</div>
+                <li class="menu-item {{ request()->routeIs('yearly-report.*') ? 'active' : '' }}">
+                    <a href="{{ route('yearly-report.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bxs-calendar-star"></i>
+                        <div data-i18n="Analytics">{{ __('label.yearly_report') }}</div>
                     </a>
                 </li>
             </ul>
@@ -135,3 +138,19 @@
 
     </ul>
 </aside>
+@push('styles')
+    <style>
+        .menu-toggle-close {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            z-index: 1000;
+        }
+
+        .menu-toggle-close .menu-link {
+            color: #697a8d;
+            font-size: 1.5rem;
+            padding: 0;
+        }
+    </style>
+@endpush

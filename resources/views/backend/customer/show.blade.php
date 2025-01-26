@@ -78,9 +78,59 @@
                     </div>
                 </div>
         </div>
-        <div class=" p-4">
+
+        <!-- Rental History Section -->
+        <div class="card mb-4">
+            <h5 class="card-header bg-primary text-white">Rental History</h5>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="badge bg-dark mt-3 mb-3">
+                            Total Spent on Rentals: Rp {{ number_format($totalSpent, 0, ',', '.') }}
+                        </div>
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>Motor</th>
+                                        <th>Start Date</th>
+                                        <th>End Date</th>
+                                        <th>Total Price</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @forelse($rentalHistory as $rental)
+                                        <tr>
+                                            <td>{{ $rental->motor->name }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($rental->start_date)->format('d M Y') }}</td>
+                                            <td>{{ \Carbon\Carbon::parse($rental->end_date)->format('d M Y') }}</td>
+                                            <td>Rp {{ number_format($rental->total_price, 0, ',', '.') }}</td>
+                                            <td>
+                                                <span
+                                                    class="badge 
+                                                @if ($rental->status == 'rent') bg-label-success
+                                                @elseif($rental->status == 'pending') bg-label-warning
+                                                @else bg-label-danger @endif">
+                                                    {{ ucfirst($rental->status) }}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    @empty
+                                        <tr>
+                                            <td colspan="5" class="text-center">No rental history found</td>
+                                        </tr>
+                                    @endforelse
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {{-- <div class=" p-4">
             <button type="submit" class="btn btn-primary me-2">Save changes</button>
             <button type="reset" class="btn btn-outline-secondary">Cancel</button>
-        </div>
+        </div> --}}
         </form>
-@endsection
+    @endsection

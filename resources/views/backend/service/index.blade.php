@@ -214,32 +214,41 @@
                         searchable: false,
                         render: function(data, type, row) {
                             const detailBtn = `<button type="button" 
-                                    class="btn btn-sm btn-info text-white set-tooltip show-service" 
-                                    data-bs-toggle="tooltip"
-                                    data-motor-name="${htmlEntities(row.motor_name)}"
-                                    data-service-date="${htmlEntities(row.formatted_service_date)}"
-                                    data-service-type="${htmlEntities(row.service_type)}"
-                                    data-cost="${htmlEntities(row.formatted_cost)}"
-                                    data-description="${htmlEntities(row.description)}"
-                                    data-status="${htmlEntities(row.status)}"
-                                    data-motor-image="/storage/${htmlEntities(row.motor_image)}"
-                                    title="Detail">
-                                    <i class="bx bx-info-circle"></i>
-                                </button>`;
+                                class="btn btn-sm btn-info text-white set-tooltip show-service" 
+                                data-bs-toggle="tooltip"
+                                data-motor-name="${htmlEntities(row.motor_name)}"
+                                data-service-date="${htmlEntities(row.formatted_service_date)}"
+                                data-service-type="${htmlEntities(row.service_type)}"
+                                data-cost="${htmlEntities(row.formatted_cost)}"
+                                data-description="${htmlEntities(row.description)}"
+                                data-status="${htmlEntities(row.status)}"
+                                data-motor-image="/storage/${htmlEntities(row.motor_image)}"
+                                title="Detail">
+                                <i class="bx bx-info-circle"></i>
+                            </button>`;
+
+                            const editBtn = `<a 
+                                href="/service/${row.id}/edit" 
+                                class="btn btn-sm btn-warning set-tooltip" 
+                                data-bs-toggle="tooltip"
+                                title="Edit">
+                                <i class="bx bx-edit"></i>
+                            </a>`;
 
                             const completeBtn = row.status !== 'completed' ?
                                 `<button 
-                                    class="btn btn-sm btn-outline-success set-tooltip complete-service" 
-                                    data-id="${row.id}"
-                                    data-bs-toggle="tooltip"
-                                    title="Complete Service">
-                                        <i class='bx bx-check-shield'></i> Selesai
-                                </button>` : '';
+                                class="btn btn-sm btn-outline-success set-tooltip complete-service" 
+                                data-id="${row.id}"
+                                data-bs-toggle="tooltip"
+                                title="Complete Service">
+                                    <i class='bx bx-check-shield'></i> Selesai
+                            </button>` : '';
 
                             return `<div class="btn-group" role="group">
-            ${detailBtn}
-            ${completeBtn}
-        </div>`;
+                ${detailBtn}
+                ${editBtn}
+                ${completeBtn}
+            </div>`;
                         }
                     }
                 ]
@@ -255,7 +264,7 @@
                 const status = $(this).data('status');
 
                 $('#service-motor-name').text(motorName);
-                $('#service-motor-image').attr('src', motorImage); 
+                $('#service-motor-image').attr('src', motorImage);
                 $('#service-date').text(serviceDate);
                 $('#service-type').text(serviceType);
                 $('#service-cost').text(cost);
@@ -271,12 +280,12 @@
                 const serviceId = $(this).data('id');
 
                 Swal.fire({
-                    title: 'Complete Service',
-                    text: 'Are you sure you want to mark this service as complete?',
+                    title: 'Selesaikan Servis',
+                    text: 'Apakah Anda yakin ingin menandai servis ini sebagai selesai?',
                     icon: 'question',
                     showCancelButton: true,
-                    confirmButtonText: 'Yes, complete it!',
-                    cancelButtonText: 'No, cancel',
+                    confirmButtonText: 'Ya, selesaikan!',
+                    cancelButtonText: 'Tidak, batalkan',
                     reverseButtons: true
                 }).then((result) => {
                     if (result.isConfirmed) {
@@ -286,8 +295,8 @@
                             success: function(response) {
                                 if (response.success) {
                                     Swal.fire({
-                                        title: 'Success!',
-                                        text: 'Service has been marked as complete.',
+                                        title: 'Berhasil!',
+                                        text: 'Servis telah ditandai sebagai selesai.',
                                         icon: 'success',
                                         showConfirmButton: false,
                                         timer: 1500
@@ -296,18 +305,18 @@
                                     });
                                 } else {
                                     Swal.fire({
-                                        title: 'Error!',
+                                        title: 'Kesalahan!',
                                         text: response.message ||
-                                            'Failed to complete service',
+                                            'Gagal menyelesaikan servis',
                                         icon: 'error'
                                     });
                                 }
                             },
                             error: function(xhr) {
                                 Swal.fire({
-                                    title: 'Error!',
+                                    title: 'Kesalahan!',
                                     text: xhr.responseJSON?.message ||
-                                        'Failed to complete service',
+                                        'Gagal menyelesaikan servis',
                                     icon: 'error'
                                 });
                             }

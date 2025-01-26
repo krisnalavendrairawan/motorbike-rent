@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\Redirect;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\Common;
 use App\Http\Requests\MotorRequest;
+use Barryvdh\DomPDF\Facade\Pdf as PDF;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Crypt;
 
 class MotorController extends Controller
@@ -61,22 +63,44 @@ class MotorController extends Controller
 
     public function show($id, Request $request)
     {
+        $year = $request->input('year', Carbon::now()->year);
+
         $motor = Motor::with([
-            'rental' => function ($query) {
+            'rental' => function ($query) use ($year) {
                 $query->where('status', 'finished')
-                ->orderBy('end_date', 'desc')
-                ->with('customer');
+                    ->whereYear('end_date', $year)
+                    ->orderBy('end_date', 'desc')
+                    ->with('customer');
             },
-            'services'
+            'services' => function ($query) use ($year) {
+                $query->whereYear('service_date', $year);
+            }
         ])->findOrFail($id);
 
-        $rentalHistory = $motor->rental()->where('status', 'finished')
-        ->orderBy('end_date', 'desc')
-        ->paginate(5, ['*'], 'page');
+        $rentalHistory = $motor->rental()
+            ->where('status', 'finished')
+            ->whereYear('end_date', $year)
+            ->orderBy('end_date', 'desc')
+            ->paginate(5, ['*'], 'page');
 
         $serviceHistory = $motor->services()
+            ->whereYear('service_date', $year)
             ->orderBy('service_date', 'desc')
             ->paginate(5, ['*'], 'service_page');
+
+        // Calculate total rental income for the selected year
+        $totalRentalIncome = $motor->rental()
+            ->where('status', 'finished')
+            ->whereYear('end_date', $year)
+            ->sum('total_price');
+
+        // Calculate total service costs for the selected year
+        $totalServiceExpenses = $motor->services()
+            ->whereYear('service_date', $year)
+            ->sum('cost');
+
+        // Generate an array of years with rental or service records
+        $availableYears = $this->getAvailableYears($motor);
 
         // Handle AJAX requests
         if ($request->ajax()) {
@@ -102,7 +126,27 @@ class MotorController extends Controller
             'motor' => $motor,
             'rentalHistory' => $rentalHistory,
             'serviceHistory' => $serviceHistory,
+            'totalRentalIncome' => $totalRentalIncome,
+            'totalServiceExpenses' => $totalServiceExpenses,
+            'selectedYear' => $year,
+            'availableYears' => $availableYears,
         ]);
+    }
+
+    private function getAvailableYears($motor)
+    {
+        $rentalYears = $motor->rental()
+            ->where('status', 'finished')
+            ->selectRaw('DISTINCT YEAR(end_date) as year')
+            ->pluck('year')
+            ->toArray();
+
+        $serviceYears = $motor->services()
+            ->selectRaw('DISTINCT YEAR(service_date) as year')
+            ->pluck('year')
+            ->toArray();
+
+        return array_unique(array_merge($rentalYears, $serviceYears));
     }
 
     public function create()
@@ -165,5 +209,33 @@ class MotorController extends Controller
         $motor->forceDelete();
 
         return redirect()->route('bike.index')->with('success', 'Motor deleted successfully.');
+    }
+
+    public function exportPdf($id)
+    {
+        $motor = Motor::with([
+            'rental' => function ($query) {
+                $query->where('status', 'finished');
+            },
+            'services',
+            'brand'
+        ])->findOrFail($id);
+
+        // Calculate total service costs
+        $totalServiceCost = $motor->services()->sum('cost');
+
+        // Calculate total rental income
+        $totalRentalIncome = $motor->rental()
+            ->where('status', 'finished')
+            ->sum('total_price');
+
+        // Generate PDF using Laravel's TCPDF or FPDF library
+        $pdf = PDF::loadView('backend.bike.pdf.motor-details', [
+            'motor' => $motor,
+            'totalServiceCost' => $totalServiceCost,
+            'totalRentalIncome' => $totalRentalIncome
+        ]);
+
+        return $pdf->download("{$motor->name}_details.pdf");
     }
 }

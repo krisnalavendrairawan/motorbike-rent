@@ -8,6 +8,7 @@ use App\Models\Brand;
 use App\Models\Rental;
 use App\Models\Customer;
 use App\Models\Service;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
 
@@ -20,6 +21,7 @@ class DashboardController extends Controller
     {
         $motorCount = Motor::count();
         $brandCount = Brand::count();
+        $transactionCount = Transaction::count();
         $user = User::all();
         $user = auth()->user();
 
@@ -28,9 +30,10 @@ class DashboardController extends Controller
             ->whereYear('created_at', now()->year)
             ->count();
 
-        $monthlyIncome = Rental::whereMonth('created_at', $currentMonth->month)
+        $monthlyIncome = Transaction::where('status', 'paid')
+            ->whereMonth('created_at', $currentMonth->month)
             ->whereYear('created_at', $currentMonth->year)
-            ->sum('total_price');
+            ->sum('total_amount');
 
         $topMotors = Rental::select(
             'motor.name as motor_name',
@@ -65,10 +68,11 @@ class DashboardController extends Controller
             ->take(5)
             ->get();
 
-        $monthlyRevenue = Rental::select(
+        $monthlyRevenue = Transaction::select(
             DB::raw('MONTH(created_at) as month'),
-            DB::raw('SUM(total_price) as total_revenue')
+            DB::raw('SUM(total_amount) as total_revenue')
         )
+            ->where('status', 'paid')
             ->whereYear('created_at', now()->year)
             ->groupBy(DB::raw('MONTH(created_at)'))
             ->orderBy('month')
@@ -80,16 +84,20 @@ class DashboardController extends Controller
                 ];
             });
 
-        $yearlyRevenue = Rental::whereYear('created_at', now()->year)
-            ->sum('total_price');
-
-        $previousMonthRevenue = Rental::whereMonth('created_at', now()->subMonth()->month)
-            ->whereYear('created_at', now()->subMonth()->year)
-            ->sum('total_price');
-
-        $currentMonthRevenue = Rental::whereMonth('created_at', now()->month)
+        $yearlyRevenue = Transaction::where('status', 'paid')
             ->whereYear('created_at', now()->year)
-            ->sum('total_price');
+            ->sum('total_amount');
+
+        $previousMonthRevenue = Transaction::where('status', 'paid')
+            ->whereMonth('created_at', now()->subMonth()->month)
+            ->whereYear('created_at', now()->subMonth()->year)
+            ->sum('total_amount');
+
+        $currentMonthRevenue = Transaction::where('status', 'paid')
+            ->whereMonth('created_at', now()->month)
+            ->whereYear('created_at', now()->year)
+            ->sum('total_amount');
+
 
         $monthlyGrowth = $previousMonthRevenue != 0
             ? (($currentMonthRevenue - $previousMonthRevenue) / $previousMonthRevenue) * 100
@@ -100,6 +108,7 @@ class DashboardController extends Controller
             'icon' => $this->icon,
             'motorCount' => $motorCount,
             'brandCount' => $brandCount,
+            'transactionCount' => $transactionCount,
             'user' => $user,
             'currentMonthRentals' => $currentMonthRentals,
             'staffCount' => $staffCount,

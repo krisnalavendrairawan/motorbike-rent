@@ -42,8 +42,11 @@
                                 <div class="card-body">
                                     <h5 class="card-title text-primary">Welcome {{ $user->name }}! 🎉</h5>
                                     <p class="mb-4">
-                                        You have access to {{ $motorCount }} motors and {{ $brandCount }} brands in the
-                                        system.
+                                        Selamat datang di sistem <span class="text-info">Motorin</span>. anda dapat mengakses dan mengelola data motor
+                                        serta data penyewaan motor anda. 🔓
+
+                                        {{-- Unlock access to {{ $motorCount }} dynamic motors and {{ $brandCount }} premium
+                                        brands in our system. Your adventure starts now! 🔓 --}}
                                     </p>
 
                                     <a href="{{ route('bike.index') }}" class="btn btn-sm btn-outline-primary">View</a>
@@ -80,12 +83,12 @@
                                 <div class="card-body">
                                     <div class="card-title d-flex align-items-start justify-content-between">
                                         <div class="avatar flex-shrink-0">
-                                            <img src="../assets/img/icons/unicons/wallet-info.png" alt="Credit Card"
+                                            <img src="../assets/img/icons/unicons/wallet-info.png" alt="Transactions"
                                                 class="rounded" />
                                         </div>
                                     </div>
-                                    <span class="fw-semibold d-block mb-1">Total Brands</span>
-                                    <h3 class="card-title mb-2">{{ $brandCount }}</h3>
+                                    <span class="fw-semibold d-block mb-1">Total Transactions</span>
+                                    <h3 class="card-title mb-2">{{ $transactionCount }}</h3>
                                 </div>
                             </div>
                         </div>
@@ -144,16 +147,6 @@
                                             <img src="../assets/img/icons/unicons/chart.png" alt="Monthly Rentals"
                                                 class="rounded" />
                                         </div>
-                                        <div class="dropdown">
-                                            <button class="btn p-0" type="button" id="cardOpt4" data-bs-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu dropdown-menu-end" aria-labelledby="cardOpt4">
-                                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                                <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                            </div>
-                                        </div>
                                     </div>
                                     <span class="d-block mb-1">Monthly Rentals</span>
                                     <h3 class="card-title text-nowrap mb-2">{{ $currentMonthRentals }}</h3>
@@ -169,16 +162,6 @@
                                             <img src="../assets/img/icons/unicons/cc-primary.png" alt="Staff Users"
                                                 class="rounded" />
                                         </div>
-                                        <div class="dropdown">
-                                            <button class="btn p-0" type="button" id="cardOpt1" data-bs-toggle="dropdown"
-                                                aria-haspopup="true" aria-expanded="false">
-                                                <i class="bx bx-dots-vertical-rounded"></i>
-                                            </button>
-                                            <div class="dropdown-menu" aria-labelledby="cardOpt1">
-                                                <a class="dropdown-item" href="javascript:void(0);">View More</a>
-                                                <a class="dropdown-item" href="javascript:void(0);">Delete</a>
-                                            </div>
-                                        </div>
                                     </div>
                                     <span class="fw-semibold d-block mb-1">Staff Users</span>
                                     <h3 class="card-title mb-2">{{ $staffCount }}</h3>
@@ -187,7 +170,7 @@
                             </div>
                         </div>
                         <!-- </div>
-                                                                                                                                <div class="row"> -->
+                                                                                                                                                                        <div class="row"> -->
                         <div class="col-12 mb-4">
                             <div class="card">
                                 <div class="card-body">

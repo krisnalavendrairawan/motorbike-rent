@@ -148,7 +148,9 @@
             </div>
         </div>
     </div>
+@endsection
 
+@push('styles')
     <style>
         .card {
             border: none;
@@ -172,4 +174,4 @@
             border-color: #5f65e8;
         }
     </style>
-@endsection
+@endpush

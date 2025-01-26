@@ -18,6 +18,14 @@
 @section('content')
     <div class="container-fluid">
         <div class="row">
+            @include('backend.bike.partials.income-summary', [
+                'totalRentalIncome' => $totalRentalIncome,
+                'totalServiceExpenses' => $totalServiceExpenses,
+                'selectedYear' => $selectedYear,
+                'availableYears' => $availableYears,
+                'motor' => $motor,
+            ])
+
             <!-- Card Motor Image -->
             <div class="col-12 col-lg-6">
                 <div class="card card-motor">
@@ -54,7 +62,13 @@
             <div class="col-12 col-lg-6">
                 <div class="card mb-4">
                     <div class="card-body">
-                        <h3 class="card-title mb-4">{{ $motor->name }}</h3>
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h3 class="card-title mb-4">{{ $motor->name }}</h3>
+                            <a href="{{ route('bike.export-pdf', $motor->id) }}"
+                                class="btn btn-outline-danger my-3 btn-sm">
+                                <i class='bx bxs-file-pdf me-2 btn-pdf'></i> Export PDF
+                            </a>
+                        </div>
                         <div class="row g-3">
                             <!-- Plat Nomor -->
                             <div class="col-12">
@@ -145,6 +159,8 @@
                     ])
                 </div>
             </div>
+
+
         </div>
     </div>
 

@@ -24,15 +24,14 @@ class RentalRequest extends FormRequest
      */
     public function rules()
     {
-        $rules = [
+        return [
             'customer_id' => 'required|exists:users,id',
             'motor_id' => 'required|exists:motor,id',
-            'start_date' => 'required|date',
-            'end_date' => 'required|date',
-            'total_price' => 'required|numeric',
-            'payment_type' => 'required',
-            // 'status' => 'required',
-            'description' => 'nullable',
+            'start_date' => 'required|date|after_or_equal:today', // Add explicit validation
+            'end_date' => 'required|date|after:start_date', // Ensure end date is after start date
+            'total_price' => 'required|numeric|min:0', // Add minimum price validation
+            'payment_type' => 'required|in:Cash,Transfer,Qris', // Add payment type validation
+            'description' => 'nullable|max:500', // Optional: Add max length
         ];
 
         return $rules;
@@ -49,6 +48,16 @@ class RentalRequest extends FormRequest
             'payment_type' => __('label.payment_type'),
             // 'status' => __('label.status'),
             'description' => __('label.description'),
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'customer_id.required' => 'Please select a customer.',
+            'motor_id.required' => 'Motor selection is mandatory.',
+            'start_date.after' => 'Start date must be today or in the future.',
+            'end_date.after' => 'End date must be after start date.',
         ];
     }
 }

@@ -10,10 +10,12 @@ use App\Http\Controllers\CustomerPageController;
 use App\Http\Controllers\MotorController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\MonthlyReportController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\YearlyReportController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -83,6 +85,7 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::delete('/bike/destroy/{id}', [MotorController::class, 'destroy'])->name('bike.destroy');
     Route::put('/motor/{motor}', [MotorController::class, 'update'])->name('motor.update');
     Route::get('/bike/{id}', [MotorController::class, 'show'])->name('bike.show');
+    Route::get('/bike/{id}/export-pdf', [MotorController::class, 'exportPdf'])->name('bike.export-pdf');
 
     Route::resource('rental', RentalController::class);
     Route::get('rental/create/{motor}', [RentalController::class, 'create'])->name('rental.create');
@@ -93,15 +96,18 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('return/datatable', [ReturnController::class, 'datatable'])->name('return.datatable');
     Route::get('admin/return/export-pdf', [ReturnController::class, 'exportPdf'])->name('return.export-pdf');
 
-    Route::get('/report/transactions', [ReportController::class, 'transactionReport'])
+    Route::get('/report/transactions', [MonthlyReportController::class, 'transactionReport'])
         ->name('monthly-report.index');
 
-    Route::get('/monthly-report/transaction-pagination', [ReportController::class, 'transactionPagination'])
+    Route::get('/monthly-report/transaction-pagination', [MonthlyReportController::class, 'transactionPagination'])
         ->name('monthly-report.transaction-pagination');
-    Route::get('/monthly-report/service-pagination', [ReportController::class, 'servicePagination'])
+    Route::get('/monthly-report/service-pagination', [MonthlyReportController::class, 'servicePagination'])
         ->name('monthly-report.service-pagination');
-    Route::get('/monthly-report/export-pdf', [ReportController::class, 'exportPDF'])
+    Route::get('/monthly-report/export-pdf', [MonthlyReportController::class, 'exportPDF'])
         ->name('monthly-report.export-pdf');
 
     Route::get('/bike-report', [BikeReportController::class, 'index'])->name('bike-report');
+
+    Route::get('/yearly-report', [YearlyReportController::class, 'yearlyReport'])->name('yearly-report.index');
+    Route::get('/yearly-report/export-pdf', [YearlyReportController::class, 'exportPDF'])->name('yearly-report.export-pdf');
 });

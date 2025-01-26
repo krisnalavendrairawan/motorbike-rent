@@ -1,7 +1,6 @@
 @extends('layouts.backend.index')
 
 @section('title', 'Create New Rental')
-
 @section('breadcrumb')
     <li class="breadcrumb-item">
         <a href="{{ route('rental.index') }}">{{ __('label.rental') }}</a>
@@ -14,7 +13,15 @@
         <x-profile />
     </li>
 @endsection
-
+@if ($errors->any())
+    <div class="alert alert-danger">
+        <ul>
+            @foreach ($errors->all() as $error)
+        <li>{{ $error }}</li>
+            @endforeach
+        </ul>
+    </div>
+@endif
 @section('content')
     <div class="container-fluid">
         <div class="row">
@@ -77,6 +84,15 @@
                                         @enderror
                                     </div>
                                     <small class="text-muted">{{ __('string.auto_total_price') }}</small>
+                                </div>
+                                <div class="col-12">
+                                    <select name="payment_type" hidden
+                                        class="form-select @error('payment_type') is-invalid @enderror" required>
+                                        <option value="Cash" selected>Cash</option>
+                                    </select>
+                                    @error('payment_type')
+                                        <div class="invalid-feedback">{{ $message }}</div>
+                                    @enderror
                                 </div>
 
                                 <div class="col-12">
