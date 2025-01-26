@@ -11,7 +11,6 @@ use App\Http\Controllers\MotorController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MonthlyReportController;
-use App\Http\Controllers\ReportController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
@@ -66,6 +65,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::resource('user', UserController::class)->except(['show']);
     Route::delete('user/{user}', [UserController::class, 'destroy'])->name('user.destroy');
     Route::post('user/datatable', [UserController::class, 'datatable'])->name('user.datatable');
+    Route::get('profile', [UserController::class, 'editProfile'])->name('user.profile');
+    Route::put('profile', [UserController::class, 'updateProfile'])->name('user.profile.update');
+    Route::get('change-password', [UserController::class, 'editPassword'])->name('user.password');
+    Route::put('change-password', [UserController::class, 'updatePassword'])->name('user.password.update');
 
     Route::resource('customer', CustomerController::class);
     Route::delete('customer/{customer}', [CustomerController::class, 'destroy'])->name('customer.destroy');

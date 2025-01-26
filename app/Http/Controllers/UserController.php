@@ -4,10 +4,13 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\Common;
+use App\Http\Requests\UserPasswordRequest;
+use App\Http\Requests\UserProfileRequest;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Models\Permission;
 use App\Http\Requests\UserRequest;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
 
 class UserController extends Controller
@@ -123,13 +126,52 @@ class UserController extends Controller
             return response()->json([
                 'status' => true,
                 'message' => 'Data berhasil dihapus'
-            ], 200); 
+            ], 200);
         } catch (\Exception $e) {
             return response()->json([
                 'status' => false,
                 'message' => 'Gagal menghapus data',
-                'error' => $e->getMessage() 
+                'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function editProfile()
+    {
+        // dd(Auth::user()->lastlogin_at);
+        $genders = Common::option('gender');
+        return view($this->path . 'profile', [
+            'title' => __('label.profile') . '  ' .  __($this->title),
+            'icon' => $this->icon,
+            'user' => Auth::user(),
+            'genders' => $genders,
+        ]);
+    }
+
+    public function updateProfile(UserProfileRequest $request)
+    {
+        $user = Auth::user();
+        $user->update($request->all());
+
+        return Redirect::route('user.profile')->with('success', __('message.update_success', ['label' => __($this->title)]));
+    }
+
+    public function editPassword()
+    {
+        return view($this->path . 'change-password', [
+            'title' => __('label.change_password') . ' ' .  __($this->title),
+            'icon' => $this->icon,
+            'user' => Auth::user(),
+        ]);
+    }
+
+    public function updatePassword(UserPasswordRequest $request)
+    {
+        // dd($request->all());
+        $user = User::find(Auth::user()->id);
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return Redirect::route('dashboard.index')->with('success', __('message.update_success', ['label' => __($this->title)]));
     }
 }
