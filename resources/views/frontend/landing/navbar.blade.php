@@ -1,19 +1,41 @@
-@push('styles')
-    <style>
-
-    </style>
-@endpush
-
 <nav class="navbar navbar-expand-lg fixed-top">
     <div class="container">
-        {{-- <a class="navbar-brand" href="#hero">
+        <a class="navbar-brand" href="#hero">
             <img src="{{ asset('assets/img/avatars/motorinlogo.png') }}" alt="Logo" width="100" height="50">
-        </a> --}}
+        </a>
 
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+        <div class="d-flex align-items-center">
+            @auth
+                <div class="d-flex d-lg-none align-items-center">
+                    <div class="dropdown">
+                        <button class="btn btn-link dropdown-toggle d-flex align-items-center p-0" type="button"
+                            id="profileDropdownMobile" data-bs-toggle="dropdown" aria-expanded="false">
+                            <img src="{{ auth()->user()->picture ? asset('storage/' . auth()->user()->picture) : asset('assets/img/avatars/1.png') }}"
+                                alt="Profile" class="rounded-circle" width="32" height="32">
+                        </button>
+                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdownMobile">
+                            <li><a class="dropdown-item" href="{{ route('customer.profile') }}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('transaction.index') }}">My Bookings</a></li>
+                            <li>
+                                <hr class="dropdown-divider">
+                            </li>
+                            <li>
+                                <form action="{{ route('customer.logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="dropdown-item">Logout</button>
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            @endauth
+
+            <button class="navbar-toggler ms-2" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+        </div>
+
 
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav me-auto">
@@ -35,24 +57,23 @@
                 </li>
             </ul>
 
-            <div class="d-flex align-items-center flex-wrap">
-                <a href="{{ route('catalog.index') }}"
-                    class="btn btn-book me-3 btn-outline-warning">{{ svg('heroicon-o-calendar-date-range', ['width' => 24, 'height' => 24]) }}
-                    Book Now</a>
-                {{-- <button class="btn btn-book me-3 btn-outline-warning">Book Now</button> --}}
+            <div class="navbar-auth">
+                <a href="{{ route('catalog.index') }}" class="btn btn-book btn-outline-warning">
+                    {{ svg('heroicon-o-calendar-date-range', ['width' => 24, 'height' => 24]) }}
+                    Book Now
+                </a>
 
                 @auth
-                    <!-- Show user profile when logged in -->
-                    <div class="dropdown">
+                    <div class="dropdown d-none d-lg-block">
                         <button class="btn btn-link dropdown-toggle d-flex align-items-center" type="button"
                             id="profileDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                            <img src="{{ Auth::user()->profile_photo_url ?? asset('assets/img/avatars/1.png') }}"
+                            <img src="{{ auth()->user()->picture ? asset('storage/' . auth()->user()->picture) : asset('assets/img/avatars/1.png') }}"
                                 alt="Profile" class="rounded-circle me-2" width="32" height="32">
                             <span>{{ Auth::user()->name }}</span>
                         </button>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                            <li><a class="dropdown-item" href="#">Profile</a></li>
-                            <li><a class="dropdown-item" href="#">My Bookings</a></li>
+                        <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                            <li><a class="dropdown-item" href="{{ route('customer.profile') }}">Profile</a></li>
+                            <li><a class="dropdown-item" href="{{ route('transaction.index') }}">My Bookings</a></li>
                             <li>
                                 <hr class="dropdown-divider">
                             </li>
@@ -65,15 +86,14 @@
                         </ul>
                     </div>
                 @else
-                    <!-- Show login/register buttons when not logged in -->
-                    <div class="navbar-auth">
-                        <a href="{{ route('customer.login.index') }}"
-                            class="btn btn-outline-primary">{{ svg('entypo-login', ['width' => 24, 'height' => 24]) }}
-                            Login</a>
-                        <a href="{{ route('customer.register.create') }}"
-                            class="btn btn-primary">{{ svg('heroicon-o-pencil', ['width' => 24, 'height' => 24]) }}
-                            Register</a>
-                    </div>
+                    <a href="{{ route('customer.login.index') }}" class="btn btn-outline-primary">
+                        {{ svg('entypo-login', ['width' => 24, 'height' => 24]) }}
+                        Login
+                    </a>
+                    <a href="{{ route('customer.register.create') }}" class="btn btn-primary">
+                        {{ svg('heroicon-o-pencil', ['width' => 24, 'height' => 24]) }}
+                        Register
+                    </a>
                 @endauth
             </div>
         </div>
@@ -90,7 +110,6 @@
             const navItems = document.querySelectorAll('.nav-item');
             const buttons = document.querySelectorAll('.btn-book, .btn-login, .btn-register');
 
-            // Initial animation timeline
             const tl = gsap.timeline({
                 defaults: {
                     duration: 0.8,
@@ -98,7 +117,6 @@
                 }
             });
 
-            // Set initial states
             gsap.set(['.navbar-brand', navItems, buttons], {
                 opacity: 0,
                 y: -20
@@ -127,7 +145,6 @@
                     stagger: 0.1,
                     duration: 0.6,
                     onComplete: () => {
-                        // Add animated class to buttons after animation
                         buttons.forEach(button => {
                             button.classList.add('animated');
                         });
@@ -188,7 +205,7 @@
                 link.addEventListener('click', function(e) {
                     const href = this.getAttribute('href');
 
-                    // Only handle links with hash
+                    // Only handle links with hash  
                     if (href && href.startsWith('#') && href !== '#') {
                         e.preventDefault();
 

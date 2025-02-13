@@ -133,4 +133,5 @@
             <button type="reset" class="btn btn-outline-secondary">Cancel</button>
         </div> --}}
         </form>
-    @endsection
+    </div>
+@endsection

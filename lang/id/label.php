@@ -121,6 +121,7 @@ return [
     'income_summary' => 'Ringkasan Pendapatan',
     'total_transaction' => 'Total Transaksi',
     'total_service' => 'Total Perawatan',
+    'weekly_report' => 'Laporan Mingguan',
 
 
     // Action

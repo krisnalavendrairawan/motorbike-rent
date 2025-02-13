@@ -2,7 +2,8 @@
 <html>
 
 <head>
-    <title>Monthly Report - {{ $selectedMonth }} {{ $selectedYear }}</title>
+    <title>Weekly Report - {{ $selectedMonth }} {{ $selectedYear }}</title>
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -50,9 +51,10 @@
 
 <body>
     <div class="header">
-        <h1>Monthly Report</h1>
-        <h2>{{ $selectedMonth }} {{ $selectedYear }}</h2>
+        <h1>Weekly Report</h1>
+        <h2>Period: {{ $startDate }} - {{ $endDate }}</h2>
     </div>
+
     <div class="summary">
         <div class="summary-card">
             <h3>Income Summary</h3>
@@ -70,9 +72,10 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
+                <th class="date">Date</th>
                 <th>Motor</th>
-                <th>Total Amount</th>
+                <th>Customer</th>
+                <th class="amount">Total Amount</th>
             </tr>
         </thead>
         <tbody>
@@ -80,9 +83,14 @@
                 <tr>
                     <td>{{ $transaction->created_at->format('d M Y') }}</td>
                     <td>{{ $transaction->rental->motor->name ?? 'N/A' }}</td>
-                    <td>Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</td>
+                    <td>{{ $transaction->rental->customer->name ?? 'N/A' }}</td>
+                    <td class="amount">Rp {{ number_format($transaction->total_amount, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
+            <tr class="total-row">
+                <td colspan="3">Total Income</td>
+                <td class="amount">Rp {{ number_format($totalIncome, 0, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
 
@@ -90,19 +98,25 @@
     <table>
         <thead>
             <tr>
-                <th>Date</th>
+                <th class="date">Date</th>
                 <th>Motor</th>
-                <th>Cost</th>
+                <th>Description</th>
+                <th class="amount">Cost</th>
             </tr>
         </thead>
         <tbody>
             @foreach ($serviceExpenses as $service)
                 <tr>
-                    <td>{{ $service->service_date }}</td>
+                    <td>{{ Carbon\Carbon::parse($service->service_date)->format('d M Y') }}</td>
                     <td>{{ $service->motor->name ?? 'N/A' }}</td>
-                    <td>Rp {{ number_format($service->cost, 0, ',', '.') }}</td>
+                    <td>{{ $service->description ?? '-' }}</td>
+                    <td class="amount">Rp {{ number_format($service->cost, 0, ',', '.') }}</td>
                 </tr>
             @endforeach
+            <tr class="total-row">
+                <td colspan="3">Total Expenses</td>
+                <td class="amount">Rp {{ number_format($totalExpenses, 0, ',', '.') }}</td>
+            </tr>
         </tbody>
     </table>
 </body>

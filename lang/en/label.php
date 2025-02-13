@@ -104,6 +104,7 @@ return [
     'income_summary' => 'Income Summary',
     'total_transaction' => 'Total Transactions',
     'total_service' => 'Total Services',
+    'weekly_report' => 'Weekly Report',
 
 
     // Action

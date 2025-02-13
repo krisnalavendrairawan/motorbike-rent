@@ -14,6 +14,7 @@ use App\Http\Controllers\MonthlyReportController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\WeeklyReportController;
 use App\Http\Controllers\YearlyReportController;
 use Illuminate\Support\Facades\Route;
 
@@ -47,6 +48,9 @@ Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/logout-customer', [AuthController::class, 'logoutCustomer'])->name('customer.logout');
 
 Route::middleware(['auth'])->group(function () {
+    Route::get('/customer/profile', [CustomerController::class, 'editProfile'])->name('customer.profile');
+    Route::put('/customer/profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
+
     Route::get('/customer/rental/{id}', [CustomerPageController::class, 'createRental'])->name('customer.rental');
     Route::post('/customer/rental', [CustomerPageController::class, 'store'])->name('customer.rental.store');
     Route::post('/rental/confirm-payment', [RentalController::class, 'confirmPayment'])->name('rental.confirm-payment');
@@ -57,6 +61,7 @@ Route::middleware(['auth'])->group(function () {
     Route::post('/transaction/{orderId}/update-status', [TransactionController::class, 'updatePaymentStatus'])->name('transaction.update-status');
     Route::get('/transaction/detail/{transaction}', [TransactionController::class, 'detailTransaction'])->name('transaction.detail');
 });
+
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
@@ -99,18 +104,28 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::post('return/datatable', [ReturnController::class, 'datatable'])->name('return.datatable');
     Route::get('admin/return/export-pdf', [ReturnController::class, 'exportPdf'])->name('return.export-pdf');
 
-    Route::get('/report/transactions', [MonthlyReportController::class, 'transactionReport'])
-        ->name('monthly-report.index');
+    Route::get('/weekly-report', [WeeklyReportController::class, 'weeklyReport'])->name('weekly-report.index');
 
-    Route::get('/monthly-report/transaction-pagination', [MonthlyReportController::class, 'transactionPagination'])
-        ->name('monthly-report.transaction-pagination');
-    Route::get('/monthly-report/service-pagination', [MonthlyReportController::class, 'servicePagination'])
-        ->name('monthly-report.service-pagination');
-    Route::get('/monthly-report/export-pdf', [MonthlyReportController::class, 'exportPDF'])
-        ->name('monthly-report.export-pdf');
+    Route::get('/weekly-report/transaction-pagination', [WeeklyReportController::class, 'weeklyTransactionPagination'])
+        ->name('weekly-report.transaction-pagination');
+
+    Route::get('/weekly-report/service-pagination', [WeeklyReportController::class, 'weeklyServicePagination'])
+        ->name('weekly-report.service-pagination');
+
+    Route::get('/weekly-report/export-pdf', [WeeklyReportController::class, 'exportWeeklyPDF'])
+        ->name('weekly-report.export-pdf');
+
+    Route::get('/api/weeks', [WeeklyReportController::class, 'getWeeks']);
+
+    Route::get('/report/transactions', [MonthlyReportController::class, 'transactionReport'])->name('monthly-report.index');
+    Route::get('/monthly-report/transaction-pagination', [MonthlyReportController::class, 'transactionPagination'])->name('monthly-report.transaction-pagination');
+    Route::get('/monthly-report/service-pagination', [MonthlyReportController::class, 'servicePagination'])->name('monthly-report.service-pagination');
+    Route::get('/monthly-report/export-pdf', [MonthlyReportController::class, 'exportPDF'])->name('monthly-report.export-pdf');
 
     Route::get('/bike-report', [BikeReportController::class, 'index'])->name('bike-report');
 
     Route::get('/yearly-report', [YearlyReportController::class, 'yearlyReport'])->name('yearly-report.index');
+    Route::get('/yearly-report/transaction-pagination', [YearlyReportController::class, 'transactionPagination'])->name('yearly-report.transaction-pagination');
+    Route::get('/yearly-report/service-pagination', [YearlyReportController::class, 'servicePagination'])->name('yearly-report.service-pagination');
     Route::get('/yearly-report/export-pdf', [YearlyReportController::class, 'exportPDF'])->name('yearly-report.export-pdf');
 });

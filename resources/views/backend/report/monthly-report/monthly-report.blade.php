@@ -1,6 +1,15 @@
 @extends('layouts.backend.index')
 
 @section('title', $title)
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+@endsection
+
+@section('page-action')
+    <li class="breadcrumb-item text-light position static">
+        <x-profile />
+    </li>
+@endsection
 @section('content')
     <div class="container-fluid mb-5">
         <div class="card">
@@ -12,7 +21,7 @@
                         <select name="month" class="form-select" id="monthSelect">
                             @foreach (range(1, 12) as $month)
                                 <option value="{{ $month }}" {{ $selectedMonth == $month ? 'selected' : '' }}>
-                                    {{ date('F', mktime(0, 0, 0, $month)) }}
+                                    {{ __('label.' . strtolower(date('F', mktime(0, 0, 0, $month)))) }}
                                 </option>
                             @endforeach
                         </select>
@@ -178,7 +187,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             var ctx = document.getElementById('transactionChart').getContext('2d');

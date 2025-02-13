@@ -1,14 +1,53 @@
 <!DOCTYPE html>
 <html>
+
 <head>
     <title>Yearly Report {{ $selectedYear }}</title>
     <style>
-        body { font-family: Arial, sans-serif; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-        .summary { margin-bottom: 20px; }
+        body {
+            font-family: Arial, sans-serif;
+            font-size: 12px;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .summary {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            border: 1px solid #ddd;
+            padding: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f2f2f2;
+        }
+
+        .total {
+            font-weight: bold;
+            text-align: right;
+        }
     </style>
 </head>
+
 <body>
     <h1>Yearly Report {{ $selectedYear }}</h1>
 
@@ -58,4 +97,5 @@
         </tbody>
     </table>
 </body>
+
 </html>

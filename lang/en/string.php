@@ -12,4 +12,5 @@ return [
     'please_login_first' => 'Please login first',
     'old_password_wrong' => 'Old password is wrong',
     'auto_total_price' => 'Price will be calculated automatically based on rental period',
+    'info_only_filled_password' => 'Leave blank if you don\'t want to change the password',
 ];

@@ -21,7 +21,7 @@
         "midtrans/midtrans-php": "^2.6",
         "owenvoke/blade-entypo": "^2.1",
         "secondnetwork/blade-tabler-icons": "^3.28",
-        "spatie/laravel-permission": "^6.10"
+        "spatie/laravel-permission": "^6.13"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.14",

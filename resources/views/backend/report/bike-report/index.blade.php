@@ -1,6 +1,15 @@
 @extends('layouts.backend.index')
 
 @section('title', $title)
+@section('breadcrumb')
+    <li class="breadcrumb-item active" aria-current="page">{{ $title }}</li>
+@endsection
+
+@section('page-action')
+    <li class="breadcrumb-item text-light position static">
+        <x-profile />
+    </li>
+@endsection
 @section('content')
     <div class="container mt-5">
         <div class="card">
@@ -57,7 +66,6 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
     <script>
         // Add error handling
         document.addEventListener('DOMContentLoaded', function() {

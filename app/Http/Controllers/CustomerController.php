@@ -9,8 +9,12 @@ use Spatie\Permission\Models\Permission;
 use App\Http\Requests\UserRequest;
 use Illuminate\Support\Facades\Redirect;
 use App\Helpers\Common;
+use App\Http\Requests\CustomerProfileRequest;
 use App\Http\Requests\CustomerRequest;
+use App\Models\Customer;
 use App\Models\Rental;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class CustomerController extends Controller
 {
@@ -157,5 +161,48 @@ class CustomerController extends Controller
                 'error' => $e->getMessage()
             ], 500);
         }
+    }
+
+    public function editProfile()
+    {
+        // dd(Auth::user()->lastlogin_at);
+
+        $genders = Common::option('gender');
+        return view('frontend.auth.customer.profile', [
+            'title' => __('label.profile') . '  ' .  __($this->title),
+            'icon' => $this->icon,
+            'customer' => Auth::user(),
+            'genders' => $genders,
+        ]);
+    }
+
+    public function updateProfile(CustomerProfileRequest $request)
+    {
+        $user = Auth::user();
+        $data = $request->validated();
+
+        // Handle password update if old_password is provided
+        if ($request->filled('old_password')) {
+            $data['password'] = bcrypt($request->new_password);
+        }
+
+        // Remove password-related fields from data array
+        unset($data['old_password']);
+        unset($data['new_password']);
+        unset($data['new_password_confirmation']);
+
+        // Handle profile picture if uploaded
+        if ($request->hasFile('picture')) {
+            // Delete old picture if exists
+            if ($user->picture && Storage::disk('public')->exists($user->picture)) {
+                Storage::disk('public')->delete($user->picture);
+            }
+            $data['picture'] = $request->file('picture')->store('picture', 'public');
+        }
+
+        $user->update($data);
+
+        return redirect()->route('landing.index')
+            ->with('success', __('message.update_success', ['label' => __($this->title)]));
     }
 }

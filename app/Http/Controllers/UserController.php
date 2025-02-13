@@ -18,6 +18,7 @@ class UserController extends Controller
     private $title = 'User';
     private $icon = '';
     private $path = 'backend.user.';
+    
     public function index()
     {
         $users = User::all();

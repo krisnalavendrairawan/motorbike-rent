@@ -10,12 +10,33 @@
         <x-profile />
     </li>
 @endsection
+
 @section('content')
     <div class="container-fluid mb-5">
         <div class="card">
             <div class="card-header">
                 <h5>{{ $title }}</h5>
-                <form id="filterForm" method="GET" action="{{ route('yearly-report.index') }}" class="row g-3">
+                <form id="filterForm" method="GET" action="{{ route('weekly-report.index') }}" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label">Month</label>
+                        <select name="month" class="form-select" id="monthSelect">
+                            @foreach (range(1, 12) as $month)
+                                <option value="{{ $month }}" {{ $selectedMonth == $month ? 'selected' : '' }}>
+                                    {{ __('label.' . strtolower(date('F', mktime(0, 0, 0, $month)))) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Week</label>
+                        <select name="week" class="form-select" id="weekSelect">
+                            @foreach ($weeks as $week)
+                                <option value="{{ $week['week'] }}" {{ $selectedWeek == $week['week'] ? 'selected' : '' }}>
+                                    Week {{ $week['week'] }} ({{ $week['start'] }} - {{ $week['end'] }})
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
                     <div class="col-md-4">
                         <label class="form-label">Year</label>
                         <select name="year" class="form-select" id="yearSelect">
@@ -26,9 +47,9 @@
                             @endforeach
                         </select>
                     </div>
-                    <div class="col-md-8 align-self-end">
+                    <div class="col-md-12 text-end">
                         <button type="submit" class="btn btn-primary">Filter</button>
-                        <a href="{{ route('yearly-report.export-pdf', ['year' => $selectedYear]) }}"
+                        <a href="{{ route('weekly-report.export-pdf', ['week' => $selectedWeek, 'month' => $selectedMonth, 'year' => $selectedYear]) }}"
                             class="btn btn-outline-danger">
                             <i class="bx bxs-file-pdf"></i> Export PDF
                         </a>
@@ -37,11 +58,8 @@
             </div>
             <div class="card-body">
                 <div class="row mb-4">
-                    <div class="col-md-6">
-                        <canvas id="yearlyChart" height="200"></canvas>
-                    </div>
-                    <div class="col-md-6">
-                        <canvas id="yearlyPieChart" height="200"></canvas>
+                    <div class="col-12">
+                        <canvas id="weeklyChart" height="100"></canvas>
                     </div>
                 </div>
                 <div class="row">
@@ -61,9 +79,8 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>{{ $transactions->count() }}</td>
-                                                <td>Rp {{ number_format($transactions->sum('total_amount'), 0, ',', '.') }}
-                                                </td>
+                                                <td>{{ $transactions->total() }}</td>
+                                                <td>Rp {{ number_format($totalIncome, 0, ',', '.') }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -87,8 +104,8 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>{{ $serviceExpenses->count() }}</td>
-                                                <td>Rp {{ number_format($serviceExpenses->sum('cost'), 0, ',', '.') }}</td>
+                                                <td>{{ $serviceExpenses->total() }}</td>
+                                                <td>Rp {{ number_format($totalExpenses, 0, ',', '.') }}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -102,7 +119,7 @@
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-header">
-                                <h6 class="mb-0">Detail Pendapatan Pertahun</h6>
+                                <h6 class="mb-0">Detail Pendapatan Mingguan</h6>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -125,11 +142,11 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                    <div class="d-flex justify-content-center mt-3">
-                                        <ul id="transaction-pagination" class="pagination">
-                                            {{ $transactions->appends(request()->input())->links('backend.report.monthly-report.vendor.pagination') }}
-                                        </ul>
-                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center mt-3">
+                                    <ul id="transaction-pagination" class="pagination">
+                                        {{ $transactions->appends(request()->input())->links('backend.report.weekly-report.vendor.pagination') }}
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -137,7 +154,7 @@
                     <div class="col-md-6">
                         <div class="card mb-3">
                             <div class="card-header">
-                                <h6 class="mb-0">Detail Pengeluaran Pertahun</h6>
+                                <h6 class="mb-0">Detail Pengeluaran Mingguan</h6>
                             </div>
                             <div class="card-body">
                                 <div class="table-responsive">
@@ -160,11 +177,11 @@
                                             @endforeach
                                         </tbody>
                                     </table>
-                                    <div class="d-flex justify-content-center mt-3">
-                                        <ul id="service-pagination" class="pagination">
-                                            {{ $serviceExpenses->appends(request()->input())->links('backend.report.monthly-report.vendor.pagination') }}
-                                        </ul>
-                                    </div>
+                                </div>
+                                <div class="d-flex justify-content-center mt-3">
+                                    <ul id="service-pagination" class="pagination">
+                                        {{ $serviceExpenses->appends(request()->input())->links('backend.report.weekly-report.vendor.pagination') }}
+                                    </ul>
                                 </div>
                             </div>
                         </div>
@@ -176,36 +193,39 @@
 @endsection
 
 @push('scripts')
+
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var ctx = document.getElementById('yearlyChart').getContext('2d');
+            var ctx = document.getElementById('weeklyChart').getContext('2d');
             var chartData = @json($chartData);
 
             new Chart(ctx, {
-                type: 'line',
+                type: 'bar',
                 data: {
-                    labels: chartData.map(item => item.month),
+                    labels: chartData.map(item => item.date),
                     datasets: [{
                             label: 'Total Pendapatan',
                             data: chartData.map(item => item.total_amount),
                             backgroundColor: 'rgba(54, 162, 235, 0.6)',
                             borderColor: 'rgba(54, 162, 235, 1)',
-                            borderWidth: 2,
-                            fill: false
+                            borderWidth: 1
                         },
                         {
                             label: 'Total Pengeluaran',
                             data: chartData.map(item => item.total_service_cost),
                             backgroundColor: 'rgba(255, 99, 132, 0.6)',
                             borderColor: 'rgba(255, 99, 132, 1)',
-                            borderWidth: 2,
-                            fill: false
+                            borderWidth: 1
                         }
                     ]
                 },
                 options: {
                     responsive: true,
                     plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weekly Income and Expense Overview'
+                        },
                         tooltip: {
                             callbacks: {
                                 label: function(context) {
@@ -219,14 +239,14 @@
                         x: {
                             title: {
                                 display: true,
-                                text: 'Month'
+                                text: 'Date'
                             }
                         },
                         y: {
                             beginAtZero: true,
                             title: {
                                 display: true,
-                                text: 'Total (Rp)'
+                                text: 'Amount (Rp)'
                             },
                             ticks: {
                                 callback: function(value) {
@@ -237,99 +257,85 @@
                     }
                 }
             });
-        });
 
-        var ctx = document.getElementById('yearlyPieChart').getContext('2d');
-        var chartData = @json($chartData);
+            // Handle month selection change
+            $('#monthSelect').change(function() {
+                const month = $(this).val();
+                const year = $('#yearSelect').val();
 
-        const totalIncome = chartData.reduce((sum, item) => sum + item.total_amount, 0);
-        const totalExpenses = chartData.reduce((sum, item) => sum + item.total_service_cost, 0);
-
-        new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: ['Pendapatan', 'Pengeluaran'],
-                datasets: [{
-                    data: [totalIncome, totalExpenses],
-                    backgroundColor: [
-                        'rgba(54, 162, 235, 0.6)',
-                        'rgba(255, 99, 132, 0.6)'
-                    ],
-                    borderColor: [
-                        'rgba(54, 162, 235, 1)',
-                        'rgba(255, 99, 132, 1)'
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: true,
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                let value = context.parsed;
-                                return 'Rp ' + value.toLocaleString('id-ID');
-                            }
-                        }
+                // Fetch weeks for selected month
+                $.ajax({
+                    url: '/api/weeks',
+                    method: 'GET',
+                    data: {
+                        month: month,
+                        year: year
+                    },
+                    success: function(response) {
+                        const weekSelect = $('#weekSelect');
+                        weekSelect.empty();
+                        response.weeks.forEach(week => {
+                            weekSelect.append(
+                                `<option value="${week.week}">Week ${week.week} (${week.start} - ${week.end})</option>`
+                            );
+                        });
                     }
-                },
-                layout: {
-                    padding: 10
-                },
-                aspectRatio: 2
+                });
+            });
+
+            // Transaction Pagination
+            $(document).on('click', '#transaction-pagination .page-link', function(e) {
+                e.preventDefault();
+                const page = $(this).text();
+                $.ajax({
+                    url: '{{ route('weekly-report.transaction-pagination') }}',
+                    method: 'GET',
+                    data: {
+                        page: page,
+                        week: {{ $selectedWeek }},
+                        month: {{ $selectedMonth }},
+                        year: {{ $selectedYear }}
+                    },
+                    success: function(response) {
+                        $('#transaction-table-body').html(response.html);
+                        updatePagination('#transaction-pagination', response.last_page, page);
+                    }
+                });
+            });
+
+            // Service Pagination
+            $(document).on('click', '#service-pagination .page-link', function(e) {
+                e.preventDefault();
+                const page = $(this).text();
+                $.ajax({
+                    url: '{{ route('weekly-report.service-pagination') }}',
+                    method: 'GET',
+                    data: {
+                        page: page,
+                        week: {{ $selectedWeek }},
+                        month: {{ $selectedMonth }},
+                        year: {{ $selectedYear }}
+                    },
+                    success: function(response) {
+                        $('#service-table-body').html(response.html);
+                        updatePagination('#service-pagination', response.last_page, page);
+                    }
+                });
+            });
+
+            function updatePagination(selector, lastPage, currentPage) {
+                const $pagination = $(selector);
+                $pagination.find('.page-item').removeClass('active disabled');
+                $pagination.find('.page-link').each(function() {
+                    const pageNum = $(this).text();
+                    if (pageNum == currentPage) {
+                        $(this).closest('.page-item').addClass('active');
+                    }
+                    if (pageNum > lastPage) {
+                        $(this).closest('.page-item').addClass('disabled');
+                    }
+                });
             }
         });
-
-        // Transaction Pagination
-        $(document).on('click', '#transaction-pagination .page-link', function(e) {
-            e.preventDefault();
-            const page = $(this).text();
-            $.ajax({
-                url: '{{ route('yearly-report.transaction-pagination') }}',
-                method: 'GET',
-                data: {
-                    page: page,
-                    year: '{{ $selectedYear }}'
-                },
-                success: function(response) {
-                    $('#transaction-table-body').html(response.html);
-                    updatePagination('#transaction-pagination', response.last_page, page);
-                }
-            });
-        });
-
-        // Service Pagination
-        $(document).on('click', '#service-pagination .page-link', function(e) {
-            e.preventDefault();
-            const page = $(this).text();
-            $.ajax({
-                url: '{{ route('yearly-report.service-pagination') }}',
-                method: 'GET',
-                data: {
-                    page: page,
-                    year: '{{ $selectedYear }}'
-                },
-                success: function(response) {
-                    $('#service-table-body').html(response.html);
-                    updatePagination('#service-pagination', response.last_page, page);
-                }
-            });
-        });
-
-        function updatePagination(selector, lastPage, currentPage) {
-            const $pagination = $(selector);
-            $pagination.find('.page-item').removeClass('active disabled');
-            $pagination.find('.page-link').each(function() {
-                const pageNum = $(this).text();
-                if (pageNum == currentPage) {
-                    $(this).closest('.page-item').addClass('active');
-                }
-                if (pageNum > lastPage) {
-                    $(this).closest('.page-item').addClass('disabled');
-                }
-            });
-        }
     </script>
 @endpush

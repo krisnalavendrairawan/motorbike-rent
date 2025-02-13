@@ -163,9 +163,11 @@
     <script src="{{ asset('assets/vendor/libs/perfect-scrollbar/perfect-scrollbar.js') }}"></script>
     <script src="{{ asset('vendors/sweetalert/sweetalert2.all.min.js') }}"></script>
 
+    {{-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> --}}
 
 
     <!-- Menu related scripts -->
+    <script src="{{ asset('assets/js/chart.js') }}"></script>
     <script src="{{ asset('assets/vendor/js/menu.js') }}"></script>
 
     <script src="{{ asset('assets/js/pages-account-settings-account.js') }}"></script>

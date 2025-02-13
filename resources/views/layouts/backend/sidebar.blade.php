@@ -111,6 +111,13 @@
 
             <ul class="menu-sub">
 
+                <!-- Weekly Report -->
+                <li class="menu-item {{ request()->routeIs('weekly-report.*') ? 'active' : '' }}">
+                    <a href="{{ route('weekly-report.index') }}" class="menu-link">
+                        <i class="menu-icon tf-icons bx bxs-calendar"></i>
+                        <div data-i18n="Analytics">{{ __('label.weekly_report') }}</div>
+                    </a>
+                </li>
                 <!-- Monthly Report -->
                 <li class="menu-item {{ request()->routeIs('monthly-report.*') ? 'active' : '' }}">
                     <a href="{{ route('monthly-report.index') }}" class="menu-link">

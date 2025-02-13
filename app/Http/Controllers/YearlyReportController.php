@@ -19,14 +19,15 @@ class YearlyReportController extends Controller
         $selectedYear = $request->year ?? Carbon::now()->year;
         $years = range(Carbon::now()->year - 5, Carbon::now()->year);
 
-        $transactions = Transaction::with(['rental.motor', 'rental.customer'])
+        $query = Transaction::with(['rental.motor', 'rental.customer'])
             ->where('status', 'paid')
-            ->whereYear('created_at', $selectedYear)
-            ->get();
+            ->whereYear('created_at', $selectedYear);
 
-        $serviceExpenses = Service::with('motor')
-            ->whereRaw('YEAR(service_date) = ?', [$selectedYear])
-            ->get();
+        $serviceQuery = Service::with('motor')
+            ->whereRaw('YEAR(service_date) = ?', [$selectedYear]);
+
+        $transactions = $query->paginate(10);
+        $serviceExpenses = $serviceQuery->paginate(10);
 
         $monthlyTransactions = $transactions->groupBy(function ($transaction) {
             return Carbon::parse($transaction->created_at)->month;
@@ -57,6 +58,33 @@ class YearlyReportController extends Controller
             'chartData' => $chartData,
             'years' => $years,
             'selectedYear' => $selectedYear,
+        ]);
+    }
+
+    public function transactionPagination(Request $request)
+    {
+        $query = Transaction::with(['rental.motor', 'rental.customer'])
+            ->where('status', 'paid')
+            ->whereYear('created_at', $request->year);
+
+        $transactions = $query->paginate(10);
+
+        return response()->json([
+            'html' => view('backend.report.monthly-report.partials.transaction-table', compact('transactions'))->render(),
+            'last_page' => $transactions->lastPage()
+        ]);
+    }
+
+    public function servicePagination(Request $request)
+    {
+        $query = Service::with('motor')
+            ->whereRaw('YEAR(service_date) = ?', [$request->year]);
+
+        $serviceExpenses = $query->paginate(10);
+
+        return response()->json([
+            'html' => view('backend.report.monthly-report.partials.service-table', compact('serviceExpenses'))->render(),
+            'last_page' => $serviceExpenses->lastPage()
         ]);
     }
 

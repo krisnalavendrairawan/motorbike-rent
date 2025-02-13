@@ -12,4 +12,5 @@ return [
     'please_login_first' => 'Silahkan login terlebih dahulu',
     'old_password_wrong' => 'Password lama tidak sesuai',
     'auto_total_price' => 'Harga akan dihitung secara otomatis berdasarkan periode sewa',
+    'info_only_filled_password' => 'Kosongkan jika Anda tidak ingin mengubah kata sandi',
 ];
