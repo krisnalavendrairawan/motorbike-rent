@@ -19,16 +19,17 @@
             </div>
 
             <div class="table-responsive">
-                <table class="table" id="table-rental">
+                <table class="table" id="table-transaction">
                     <thead>
                         <tr>
                             <th>{{ __('label.no') }}</th>
                             <th>{{ __('label.customer') }}</th>
                             <th>{{ __('label.bike') }}</th>
-                            <th>{{ __('label.start_date_rent') }}</th>
-                            <th>{{ __('label.end_date_rent') }}</th>
+                            <th>{{ __('label.order_id') }}</th>
+                            <th>{{ __('label.payment_type') }}</th>
+                            <th>{{ __('label.total_amount') }}</th>
                             <th>{{ __('label.status') }}</th>
-                            <th>{{ __('label.total_price') }}</th>
+                            <th>{{ __('label.payment_time') }}</th>
                             <th class="text-center">{{ __('label.action') }}</th>
                         </tr>
                     </thead>
@@ -38,49 +39,53 @@
         </div>
     </div>
     <div class="col-lg-4 col-md-6">
-        <div class="modal fade" id="showRentalModal" tabindex="-1" aria-hidden="true">
+        <div class="modal fade" id="showTransactionModal" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered" role="document">
                 <div class="modal-content">
                     <div class="modal-header bg-primary">
-                        <h5 class="modal-title text-white fw-semibold">{{ __('label.rental_detail') }}</h5>
+                        <h5 class="modal-title text-white fw-semibold">{{ __('label.payment_detail') }}</h5>
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
                             aria-label="Close"></button>
                     </div>
                     <div class="modal-body p-4">
                         <div class="text-center mb-4">
-                            <img id="rental-motor-image" src="" alt="Motor Image" class="motor-image rounded"
+                            <img id="transaction-motor-image" src="" alt="Motor Image" class="motor-image rounded"
                                 style="height: 180px; object-fit: cover; width: 50%;">
                         </div>
 
                         <div class="section-title mb-4 p-3 bg-light-blue rounded">
-                            <h6 class="mb-0 text-primary">Informasi Penyewaan</h6>
+                            <h6 class="mb-0 text-primary">Informasi Pembayaran</h6>
                         </div>
 
                         <div class="px-3">
-                            <table class="w-100 rental-info-table">
+                            <table class="w-100 transaction-info-table">
                                 <tr>
                                     <td class="py-2 text-secondary" width="35%">{{ __('label.customer') }}</td>
-                                    <td class="py-2" id="rental-customer-name"></td>
+                                    <td class="py-2" id="transaction-customer-name"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 text-secondary">{{ __('label.bike') }}</td>
-                                    <td class="py-2" id="rental-motor-name"></td>
+                                    <td class="py-2" id="transaction-motor-name"></td>
                                 </tr>
                                 <tr>
-                                    <td class="py-2 text-secondary">{{ __('label.start_date_rent') }}</td>
-                                    <td class="py-2" id="rental-start-date"></td>
+                                    <td class="py-2 text-secondary">{{ __('label.order_id') }}</td>
+                                    <td class="py-2" id="transaction-order-id"></td>
                                 </tr>
                                 <tr>
-                                    <td class="py-2 text-secondary">{{ __('label.end_date_rent') }}</td>
-                                    <td class="py-2" id="rental-end-date"></td>
+                                    <td class="py-2 text-secondary">{{ __('label.payment_type') }}</td>
+                                    <td class="py-2" id="transaction-payment-type"></td>
                                 </tr>
                                 <tr>
-                                    <td class="py-2 text-secondary">{{ __('label.total_price') }}</td>
-                                    <td class="py-2" id="rental-total-price"></td>
+                                    <td class="py-2 text-secondary">{{ __('label.total_amount') }}</td>
+                                    <td class="py-2" id="transaction-total_amount"></td>
                                 </tr>
                                 <tr>
                                     <td class="py-2 text-secondary">{{ __('label.status') }}</td>
-                                    <td class="py-2" id="rental-status"></td>
+                                    <td class="py-2" id="transaction-status"></td>
+                                </tr>
+                                <tr>
+                                    <td class="py-2 text-secondary">{{ __('label.payment_time') }}</td>
+                                    <td class="py-2" id="transaction-payment-date"></td>
                                 </tr>
                             </table>
                         </div>
@@ -100,7 +105,6 @@
     <link href="{{ asset('vendors/datatables/DataTables-1.13.6/css/dataTables.bootstrap5.min.css') }}" rel="stylesheet">
     <style>
         .page-title-box {
-
             padding: 1.5rem;
             border-radius: 0.375rem;
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
@@ -114,15 +118,15 @@
             background-color: #f8f9ff;
         }
 
-        .rental-info-table tr {
+        .transaction-info-table tr {
             border-bottom: 1px solid #e9ecef;
         }
 
-        .rental-info-table tr:last-child {
+        .transaction-info-table tr:last-child {
             border-bottom: none;
         }
 
-        .rental-info-table td {
+        .transaction-info-table td {
             font-size: 14px;
         }
 
@@ -158,7 +162,7 @@
             });
 
             window.LaravelDataTables = window.LaravelDataTables || {}
-            window.LaravelDataTables["table-rental"] = $("#table-rental").DataTable({
+            window.LaravelDataTables["table-transaction"] = $("#table-transaction").DataTable({
                 dom: 'fltpr',
                 language: {
                     search: "",
@@ -167,7 +171,7 @@
                     emptyTable: label_nodata
                 },
                 ajax: {
-                    url: "{{ route('rental.datatable') }}",
+                    url: "{{ route('payment.datatable') }}",
                     type: "POST"
                 },
                 processing: true,
@@ -199,11 +203,19 @@
                     },
                     {
                         class: "align-middle",
-                        render: (data, type, row, meta) => htmlEntities(row.formatted_start_date)
+                        render: (data, type, row, meta) => htmlEntities(row.order_id)
                     },
                     {
                         class: "align-middle",
-                        render: (data, type, row, meta) => htmlEntities(row.formatted_end_date)
+                        render: (data, type, row, meta) => {
+                            let paymentType = row.payment_type.charAt(0).toUpperCase() + row
+                                .payment_type.slice(1);
+                            return htmlEntities(paymentType);
+                        }
+                    },
+                    {
+                        class: "align-middle",
+                        render: (data, type, row, meta) => htmlEntities(row.formatted_total_amount)
                     },
                     {
                         class: "align-middle",
@@ -215,21 +227,17 @@
                                     statusClass = 'bg-warning';
                                     statusText = 'Pending';
                                     break;
-                                case 'rent':
-                                    statusClass = 'bg-primary';
-                                    statusText = 'Disewa';
-                                    break;
-                                case 'finished':
+                                case 'paid':
                                     statusClass = 'bg-success';
-                                    statusText = 'Selesai';
+                                    statusText = 'Paid';
                                     break;
-                                case 'returned':
-                                    statusClass = 'bg-info';
-                                    statusText = 'Dikembalikan';
-                                    break;
-                                case 'cancelled':
+                                case 'failed':
                                     statusClass = 'bg-danger';
-                                    statusText = 'Dibatalkan';
+                                    statusText = 'Failed';
+                                    break;
+                                case 'expired':
+                                    statusClass = 'bg-secondary';
+                                    statusText = 'Expired';
                                     break;
                             }
                             return `<span class="badge ${statusClass}">${statusText}</span>`;
@@ -237,7 +245,8 @@
                     },
                     {
                         class: "align-middle",
-                        render: (data, type, row, meta) => htmlEntities(row.formatted_price)
+                        render: (data, type, row, meta) => row.payment_date ? htmlEntities(row
+                            .formatted_payment_date) : '-'
                     },
                     {
                         class: "align-middle text-center",
@@ -245,15 +254,16 @@
                         render: function(data, type, row) {
                             let actions = `<div class="btn-group" role="group">
                                         <button type="button" 
-                                            class="btn btn-sm btn-info text-white set-tooltip show-rental" 
+                                            class="btn btn-sm btn-info text-white set-tooltip show-transaction" 
                                             data-bs-toggle="tooltip"
                                             data-customer-name="${htmlEntities(row.customer_name)}"
                                             data-motor-name="${htmlEntities(row.motor_name)}"
                                             data-motor-image="/storage/${htmlEntities(row.motor_image)}"
-                                            data-start-date="${htmlEntities(row.formatted_start_date)}"
-                                            data-end-date="${htmlEntities(row.formatted_end_date)}"
-                                            data-total-price="${htmlEntities(row.formatted_price)}"
+                                            data-order-id="${htmlEntities(row.order_id)}"
+                                            data-payment-type="${htmlEntities(row.payment_type)}"
+                                           data-total_amount="${htmlEntities(row.formatted_total_amount)}"
                                             data-status="${htmlEntities(row.status)}"
+                                            data-payment-date="${row.payment_date ? htmlEntities(row.formatted_payment_date) : '-'}"
                                             title="Detail">
                                             <i class="bx bx-info-circle"></i>
                                         </button>`;
@@ -261,23 +271,13 @@
                             if (row.status === 'pending' && row.payment_type === 'cash') {
                                 actions += `
                                     <button type="button" 
-                                        class="btn btn-sm btn-outline-info confirm-payment-btn"
-                                        data-rental-id="${row.id}"
+                                        class="btn btn-sm btn-outline-success confirm-payment-btn"
+                                        data-transaction-id="${row.id}"
+                                        data-rental-id="${row.rental_id}"
                                         data-bs-toggle="tooltip"
                                         title="Confirm Payment">
-                                        <i class="bx bx-money"></i> Confirm Payment
+                                        <i class="bx bx-check"></i> Konfirmasi
                                     </button>`;
-                            }
-
-                            if (row.status === 'rent') {
-                                actions += `
-                                    <a href="#" 
-                                    class="btn btn-sm btn-outline-success btn-complete-rental" 
-                                    data-rental-id="${row.id}"
-                                    data-bs-toggle="tooltip"
-                                    title="Complete Rental">
-                                        <i class='bx bx-check-shield'></i> Selesai
-                                    </a>`;
                             }
 
                             actions += `</div>`;
@@ -291,45 +291,89 @@
 
         });
 
-        $('#table-rental').on('click', '.btn-complete-rental', function(e) {
+        $(document).on('click', '.show-transaction', function() {
+            const customerName = $(this).data('customer-name');
+            const motorName = $(this).data('motor-name');
+            const motorImage = $(this).data('motor-image');
+            const orderId = $(this).data('order-id');
+            const paymentType = $(this).data('payment-type');
+            const total_amount = $(this).data('total_amount');
+            const status = $(this).data('status');
+            const paymentDate = $(this).data('payment-date');
+
+            $('#transaction-customer-name').text(customerName);
+            $('#transaction-motor-name').text(motorName);
+            $('#transaction-motor-image').attr('src', motorImage);
+            $('#transaction-order-id').text(orderId);
+            $('#transaction-payment-type').text(paymentType.charAt(0).toUpperCase() + paymentType.slice(1));
+            $('#transaction-total_amount').text(total_amount);
+            $('#transaction-payment-date').text(paymentDate);
+
+            let statusBadgeClass = '';
+            let statusText = '';
+            switch (status) {
+                case 'pending':
+                    statusBadgeClass = 'bg-warning';
+                    statusText = 'Pending';
+                    break;
+                case 'paid':
+                    statusBadgeClass = 'bg-success';
+                    statusText = 'Paid';
+                    break;
+                case 'failed':
+                    statusBadgeClass = 'bg-danger';
+                    statusText = 'Failed';
+                    break;
+                case 'expired':
+                    statusBadgeClass = 'bg-secondary';
+                    statusText = 'Expired';
+                    break;
+            }
+
+            $('#transaction-status').html(`<span class="badge ${statusBadgeClass}">${statusText}</span>`);
+
+            $('#showTransactionModal').modal('show');
+        });
+
+        $('#table-transaction').on('click', '.confirm-payment-btn', function(e) {
             e.preventDefault();
             const button = $(this);
+            const transactionId = button.data('transaction-id');
             const rentalId = button.data('rental-id');
 
             Swal.fire({
-                title: 'Konfirmasi',
-                text: 'Apakah Anda yakin ingin menyelesaikan penyewaan ini?',
+                title: 'Konfirmasi Pembayaran',
+                text: 'Apakah Anda yakin ingin mengkonfirmasi pembayaran ini?',
                 icon: 'question',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Selesaikan!',
+                confirmButtonText: 'Ya, Konfirmasi!',
                 cancelButtonText: 'Batal'
             }).then((result) => {
                 if (result.isConfirmed) {
-                    // Show loading state
                     button.prop('disabled', true).html(
                         '<i class="bx bx-loader bx-spin"></i> Processing...');
 
                     $.ajax({
-                        url: "{{ route('return.store') }}",
+                        url: "{{ route('payment.confirm') }}",
                         type: 'POST',
                         data: {
+                            transaction_id: transactionId,
                             rental_id: rentalId,
-                            return_date: moment().format('YYYY-MM-DD HH:mm:ss'),
                             _token: $('meta[name="csrf-token"]').attr('content')
                         },
                         dataType: 'json',
                         success: function(response) {
-                            if (response.status === 'success') {
+                            if (response.success) {
                                 Swal.fire({
                                     title: 'Berhasil!',
-                                    text: response.message,
+                                    text: 'Pembayaran berhasil dikonfirmasi',
                                     icon: 'success',
                                     timer: 1500,
                                     showConfirmButton: false
                                 });
-                                window.LaravelDataTables["table-rental"].ajax.reload();
+                                window.LaravelDataTables["table-transaction"].ajax.reload();
                             } else {
                                 Swal.fire({
                                     title: 'Gagal!',
@@ -353,143 +397,8 @@
                             });
                         },
                         complete: function() {
-                            // Reset button state
                             button.prop('disabled', false)
-                                .html('<i class="bx bx-check-shield"></i> Selesai');
-                        }
-                    });
-                }
-            });
-        });
-
-        $(document).on('click', '.show-rental', function() {
-            const customerName = $(this).data('customer-name');
-            const motorName = $(this).data('motor-name');
-            const motorImage = $(this).data('motor-image');
-            const startDate = $(this).data('start-date');
-            const endDate = $(this).data('end-date');
-            const totalPrice = $(this).data('total-price');
-            const status = $(this).data('status');
-
-            $('#rental-customer-name').text(customerName);
-            $('#rental-motor-name').text(motorName);
-            $('#rental-motor-image').attr('src', motorImage);
-            $('#rental-start-date').text(startDate);
-            $('#rental-end-date').text(endDate);
-            $('#rental-total-price').text(totalPrice);
-
-            let statusBadgeClass = '';
-            let statusText = '';
-            switch (status) {
-                case 'rent':
-                    statusBadgeClass = 'bg-primary';
-                    statusText = 'Disewa';
-                    break;
-                case 'finished':
-                    statusBadgeClass = 'bg-success';
-                    statusText = 'Selesai';
-                    break;
-                case 'pending':
-                    statusBadgeClass = 'bg-warning';
-                    statusText = 'Pending';
-                    break;
-                case 'returned':
-                    statusBadgeClass = 'bg-info';
-                    statusText = 'Dikembalikan';
-                    break;
-                case 'cancel':
-                    statusBadgeClass = 'bg-danger';
-                    statusText = 'Dibatalkan';
-                    break;
-            }
-
-            $('#rental-status').html(`<span class="badge ${statusBadgeClass}">${statusText}</span>`);
-
-            $('#showRentalModal').modal('show');
-        });
-
-        $('#table-rental').on('click', '.confirm-payment-btn', function(e) {
-            e.preventDefault();
-            const button = $(this);
-            const rentalId = button.data('rental-id');
-
-            Swal.fire({
-                title: 'Konfirmasi Pembayaran',
-                text: 'Apakah customer ini sudah membayar?',
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonColor: '#3085d6',
-                cancelButtonColor: '#d33',
-                confirmButtonText: 'Ya, Sudah Bayar!',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
-                    button.prop('disabled', true).html(
-                        '<i class="bx bx-loader bx-spin"></i> Processing...');
-
-                    $.ajax({
-                        url: "{{ route('rental.confirm-payment') }}",
-                        type: 'POST',
-                        data: {
-                            rental_id: rentalId,
-                            _token: $('meta[name="csrf-token"]').attr('content')
-
-                        },
-                        dataType: 'json',
-                        success: function(response) {
-                            if (response.status === 'success') {
-                                Swal.fire({
-                                    title: 'Berhasil!',
-                                    text: 'Pembayaran berhasil dikonfirmasi',
-                                    icon: 'success',
-                                    timer: 1500,
-                                    showConfirmButton: false
-                                });
-                                window.LaravelDataTables["table-rental"].ajax.reload();
-                            } else {
-                                Swal.fire({
-                                    title: 'Gagal!',
-                                    text: response.message || 'Terjadi kesalahan',
-                                    icon: 'error'
-                                });
-                            }
-                        },
-                        error: function(xhr, status, error) {
-                            // Safely log response, even if responseJSON is undefined
-                            console.error('Error Status:', status);
-                            console.error('Error:', error);
-                            console.error('Response Text:', xhr.responseText);
-                            if (xhr.responseText.includes('<!DOCTYPE html>') && xhr.responseText
-                                .includes('Login')) {
-                                Swal.fire({
-                                    title: 'Session Expired',
-                                    text: 'Your session has expired. Please log in again.',
-                                    icon: 'warning',
-                                    confirmButtonText: 'Log In'
-                                }).then(() => {
-                                    window.location.reload(); // Redirect to login page
-                                });
-                                return;
-                            }
-
-                            let errorMessage = 'Terjadi kesalahan';
-                            if (xhr.responseJSON) {
-                                if (xhr.responseJSON.errors) {
-                                    errorMessage = Object.values(xhr.responseJSON.errors)[0][0];
-                                } else if (xhr.responseJSON.message) {
-                                    errorMessage = xhr.responseJSON.message;
-                                }
-                            }
-
-                            Swal.fire({
-                                title: 'Error!',
-                                text: errorMessage,
-                                icon: 'error'
-                            });
-                        },
-                        complete: function() {
-                            button.prop('disabled', false)
-                                .html('<i class="bx bx-money"></i> Confirm Payment');
+                                .html('<i class="bx bx-check"></i> Konfirmasi');
                         }
                     });
                 }

@@ -40,7 +40,7 @@ class TransactionController extends Controller
             if ($transaction->status === 'pending' && empty($transaction->snap_token)) {
                 $snapToken = $this->midtransService->createTransaction($transaction);
                 $transaction->update(['snap_token' => $snapToken]);
-                $transaction->refresh(); // Add this to refresh the model
+                $transaction->refresh();
             }
 
             return view('frontend.transaction.show', compact('transaction'));

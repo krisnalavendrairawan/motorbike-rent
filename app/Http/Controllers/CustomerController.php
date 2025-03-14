@@ -165,8 +165,6 @@ class CustomerController extends Controller
 
     public function editProfile()
     {
-        // dd(Auth::user()->lastlogin_at);
-
         $genders = Common::option('gender');
         return view('frontend.auth.customer.profile', [
             'title' => __('label.profile') . '  ' .  __($this->title),
@@ -178,22 +176,19 @@ class CustomerController extends Controller
 
     public function updateProfile(CustomerProfileRequest $request)
     {
+        // dd($request->all());
         $user = Auth::user();
         $data = $request->validated();
 
-        // Handle password update if old_password is provided
         if ($request->filled('old_password')) {
             $data['password'] = bcrypt($request->new_password);
         }
 
-        // Remove password-related fields from data array
         unset($data['old_password']);
         unset($data['new_password']);
         unset($data['new_password_confirmation']);
 
-        // Handle profile picture if uploaded
         if ($request->hasFile('picture')) {
-            // Delete old picture if exists
             if ($user->picture && Storage::disk('public')->exists($user->picture)) {
                 Storage::disk('public')->delete($user->picture);
             }

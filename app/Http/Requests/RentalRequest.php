@@ -27,11 +27,11 @@ class RentalRequest extends FormRequest
         return [
             'customer_id' => 'required|exists:users,id',
             'motor_id' => 'required|exists:motor,id',
-            'start_date' => 'required|date|after_or_equal:today', // Add explicit validation
-            'end_date' => 'required|date|after:start_date', // Ensure end date is after start date
-            'total_price' => 'required|numeric|min:0', // Add minimum price validation
-            'payment_type' => 'required|in:Cash,Transfer,Qris', // Add payment type validation
-            'description' => 'nullable|max:500', // Optional: Add max length
+            'start_date' => 'required|date|after_or_equal:today', 
+            'end_date' => 'required|date|after:start_date', 
+            'total_price' => 'required|numeric|min:0', 
+            'payment_type' => 'required|in:cash,transfer,qris', 
+            'description' => 'nullable|max:500', 
         ];
 
         return $rules;

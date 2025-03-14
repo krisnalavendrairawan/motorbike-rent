@@ -133,8 +133,8 @@
         </div>
     </div>
 
-    <!-- Payment Info Modal for Cash -->
-    @if ($transaction->payment_type === 'Cash')
+    <!-- Payment Info Modal for Cash - CORRECTED: changed 'Cash' to 'cash' -->
+    @if ($transaction->payment_type === 'cash')
         <div class="modal fade" id="paymentInfoModal" tabindex="-1" aria-labelledby="paymentInfoModalLabel"
             aria-hidden="true">
             <div class="modal-dialog modal-lg">
@@ -162,6 +162,7 @@
                     </div>
                 </div>
             </div>
+        </div>
     @endif
 
 @endsection
@@ -193,38 +194,40 @@
             data-client-key="{{ config('midtrans.client_key') }}"></script>
         <script>
             const payButton = document.querySelector('#pay-button');
-            payButton.addEventListener('click', function(e) {
-                e.preventDefault();
-                console.log('Token:', '{{ $transaction->snap_token }}');
-                snap.pay('{{ $transaction->snap_token }}', {
-                    onSuccess: function(result) {
-                        fetch(`/transaction/${result.order_id}/update-status`, {
-                                method: 'POST',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                    'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
-                                        .content
-                                },
-                                body: JSON.stringify({
-                                    status: 'success',
-                                    result: result
+            if (payButton) { // Add this check
+                payButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    console.log('Token:', '{{ $transaction->snap_token }}');
+                    snap.pay('{{ $transaction->snap_token }}', {
+                        onSuccess: function(result) {
+                            fetch(`/transaction/${result.order_id}/update-status`, {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json',
+                                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')
+                                            .content
+                                    },
+                                    body: JSON.stringify({
+                                        status: 'success',
+                                        result: result
+                                    })
                                 })
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    window.location.href = '{{ route('transaction.index') }}';
-                                } else {
+                                .then(response => response.json())
+                                .then(data => {
+                                    if (data.success) {
+                                        window.location.href = '{{ route('transaction.index') }}';
+                                    } else {
+                                        alert('Error updating payment status');
+                                    }
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
                                     alert('Error updating payment status');
-                                }
-                            })
-                            .catch(error => {
-                                console.error('Error:', error);
-                                alert('Error updating payment status');
-                            });
-                    },
+                                });
+                        },
+                    });
                 });
-            });
+            }
         </script>
     @endpush
 @endif

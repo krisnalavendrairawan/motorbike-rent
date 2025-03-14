@@ -173,7 +173,7 @@ class RentalController extends Controller
 
     public function store(RentalRequest $request)
     {
-        
+
         try {
             DB::beginTransaction();
             $startDate = Carbon::parse($request->start_date);

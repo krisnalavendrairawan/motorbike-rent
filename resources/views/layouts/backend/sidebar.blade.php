@@ -98,6 +98,14 @@
             </a>
         </li>
 
+        {{-- Payment --}}
+        <li class="menu-item {{ request()->routeIs('payment.*') ? 'active' : '' }}">
+            <a href="{{ route('payment.index') }}" class="menu-link">
+                <i class="menu-icon tf-icons bx bxs-wallet"></i>
+                <div data-i18n="Analytics">{{ __('label.list-payment') }}</div>
+            </a>
+        </li>
+
         {{-- Motor --}}
         <li class="menu-header small text-uppercase">
             <span class="menu-header-text">{{ __('label.report') }}</span>

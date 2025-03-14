@@ -122,7 +122,12 @@ return [
     'total_transaction' => 'Total Transaksi',
     'total_service' => 'Total Perawatan',
     'weekly_report' => 'Laporan Mingguan',
-
+    'total_bikes' => 'Total Motor',
+    'order_id' => 'ID Order',
+    'payment_time' => 'Waktu Pembayaran',
+    'total_amount' => 'Total',
+    'payment' => 'Pembayaran',
+    'list-payment' => 'Daftar Pembayaran',
 
     // Action
     'add' => 'Add',

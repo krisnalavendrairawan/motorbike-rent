@@ -117,7 +117,14 @@
                                     </div>
 
                                     <div class="text-end mt-4">
-                                        <x-form.button-submit :cancel-route="route('landing.index')" />
+                                        <a href="{{ route('landing.index') }}" class="btn btn-outline-secondary me-2">
+                                            <i class="bx bx-x d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Cancel</span>
+                                        </a>
+                                        <button type="submit" class="btn btn-primary">
+                                            <i class="bx bx-check d-block d-sm-none"></i>
+                                            <span class="d-none d-sm-block">Save Changes</span>
+                                        </button>
                                     </div>
                                 </div>
                             </div>

@@ -23,7 +23,12 @@
                         </p>
 
                         <a href="{{ route('catalog.index') }}" class="btn btn-warning btn-lg px-4">
-                            {{ svg('carbon-catalog', ['width' => 24, 'height' => 24]) }} Lihat Katalog
+                            {{ svg('carbon-catalog', ['width' => 24, 'height' => 24]) }}
+                            @auth
+                                Lihat Katalog
+                            @else
+                                Login Untuk Melihat Katalog
+                            @endauth
                         </a>
                     </div>
                 </div>

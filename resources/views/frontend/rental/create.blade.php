@@ -74,17 +74,17 @@
                                     <div class="form-group">
                                         <label class="form-label">{{ __('label.payment_type') }}</label>
                                         <div class="row g-3">
-                                            @foreach ($payment_type as $type)
+                                            @foreach ($payment_type as $key => $label)
                                                 <div class="col-md-4">
                                                     <div class="form-check payment-type-card">
                                                         <input class="form-check-input" type="radio" name="payment_type"
-                                                            id="payment_{{ $type }}" value="{{ $type }}"
+                                                            id="payment_{{ $key }}" value="{{ $key }}"
                                                             required>
                                                         <label class="form-check-label payment-type-label"
-                                                            for="payment_{{ $type }}">
+                                                            for="payment_{{ $key }}">
                                                             <i
-                                                                class='bx bx-{{ $type === 'cash' ? 'money' : ($type === 'transfer' ? 'transfer' : 'qr') }} fs-4'></i>
-                                                            <span class="ms-2 text-capitalize">{{ $type }}</span>
+                                                                class='bx bx-{{ $key === 'cash' ? 'money' : ($key === 'transfer' ? 'transfer' : 'qris') }} fs-4'></i>
+                                                            <span class="ms-2 text-capitalize">{{ $label }}</span>
                                                         </label>
                                                     </div>
                                                 </div>
@@ -166,7 +166,7 @@
                 if (startDate && endDate && startDate < endDate) {
                     const diffTime = Math.abs(endDate - startDate);
                     let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    days = Math.max(1, days); 
+                    days = Math.max(1, days);
 
                     const totalPrice = days * dailyRate;
 

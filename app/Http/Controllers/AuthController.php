@@ -51,10 +51,16 @@ class AuthController extends Controller
         $user = User::where('email', $email)->first();
 
         if ($user && Hash::check($password, $user->password)) {
-            Auth::login($user, $request->filled('remember'));
-            $request->session()->regenerate();
+            if ($user->hasRole('customer')) {
+                Auth::login($user, $request->filled('remember'));
+                $request->session()->regenerate();
 
-            return redirect()->route('landing.index')->with('success', 'Welcome back!');
+                return redirect()->intended(route('landing.index'))->with('success', 'Welcome back!');
+            } else {
+                return back()->withErrors([
+                    'email' => 'Halaman ini hanya untuk customer. Silakan login melalui halaman admin.',
+                ])->with('sweetalert', true);
+            }
         }
 
         return back()->withErrors([
@@ -79,13 +85,17 @@ class AuthController extends Controller
         $user = User::where($loginType, $request->login)->first();
 
         if ($user && Hash::check($request->password, $user->password)) {
-            Auth::login($user, $request->filled('remember'));
-            $request->session()->regenerate();
-
-            if ($user->role === 'admin' || $user->role === 'customer') {
-                return redirect()->intended('/dashboard')->with('success', 'Selamat Datang Kembali!');
+            if ($user->hasRole('admin')) {
+                Auth::login($user, $request->filled('remember'));
+                $request->session()->regenerate();
+                return redirect()->intended('/dashboard')->with('success', 'Selamat Datang Kembali, Admin!');
+            } else {
+                return back()->withErrors([
+                    'login' => 'Halaman ini hanya untuk admin. Silakan login melalui halaman customer.',
+                ])->with('sweetalert', true);
             }
         }
+
         return back()->withErrors([
             'login' => 'Login atau Password salah',
         ])->with('sweetalert', true);

@@ -22,7 +22,13 @@
 
         body {
             font-family: 'Open Sans', sans-serif;
+            overflow-x: hidden;
+            width: 100%;
+            position: relative;
+            margin: 0;
+            padding: 0;
         }
+
     </style>
 
     <!-- Core CSS - Load these first -->

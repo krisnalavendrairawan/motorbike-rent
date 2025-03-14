@@ -88,7 +88,7 @@
                                 <div class="col-12">
                                     <select name="payment_type" hidden
                                         class="form-select @error('payment_type') is-invalid @enderror" required>
-                                        <option value="Cash" selected>Cash</option>
+                                        <option value="cash" selected>cash</option>
                                     </select>
                                     @error('payment_type')
                                         <div class="invalid-feedback">{{ $message }}</div>

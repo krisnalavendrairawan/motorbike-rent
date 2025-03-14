@@ -57,6 +57,8 @@ class BrandController extends Controller
             $push = $u->toArray();
             $push['encrypted_id'] = $u->encrypted_id;
             $push['image_url'] = asset('storage/' . $u->logo);
+            // Add motorcycle count for each brand
+            $push['motor_count'] = $u->motor()->count();
             array_push($brands_arr, $push);
         }
 

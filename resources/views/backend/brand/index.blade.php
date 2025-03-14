@@ -47,7 +47,6 @@
                                     aria-label="Close"></button>
                             </div>
                             <div class="modal-body p-4">
-                                <!-- Section Title with Light Blue Background -->
                                 <div class="section-title mb-4 p-3 bg-light-blue rounded">
                                     <h6 class="mb-0 text-primary">Informasi Brand</h6>
                                 </div>
@@ -62,6 +61,10 @@
                                         <tr>
                                             <td class="py-2 text-secondary">{{ __('label.description') }}</td>
                                             <td class="py-2" id="brand-description"></td>
+                                        </tr>
+                                        <tr>
+                                            <td class="py-2 text-secondary">{{ __('label.total_bikes') }}</td>
+                                            <td class="py-2" id="brand-motor-count"></td>
                                         </tr>
                                         <tr>
                                             <td class="py-2 text-secondary">{{ __('label.logo') }}</td>
@@ -217,19 +220,20 @@
                                         .encrypted_id));
 
                                     return `
-                            <button   button type="button" class="btn btn-icon btn-primary set-tooltip show-brand" 
-                                    data-name="${htmlEntities(row.name)}"
-                                    data-description="${htmlEntities(row.description)}"
-                                    data-logo="${row.image_url}"
-                                    title="${label_show}">
-                                <i class='bx bxs-user-detail'></i>
-                            </button>
-                            <a href="${url_edit}" class="btn btn-icon btn-dark set-tooltip" title="${label_edit}">
-                                <i class='bx bx-edit'></i>
-                            </a>
-                            <a href="javascript:void(0)" class="btn btn-icon btn-danger" title="${label_delete}" onclick="deleteConfirm('${url_destroy}', false, 'table-brand')">
-                                <i class='bx bx-trash-alt'></i>
-                            </a>`
+                <button type="button" class="btn btn-icon btn-primary set-tooltip show-brand" 
+                        data-name="${htmlEntities(row.name)}"
+                        data-description="${htmlEntities(row.description)}"
+                        data-logo="${row.image_url}"
+                        data-motor-count="${row.motor_count}"
+                        title="${label_show}">
+                    <i class='bx bxs-user-detail'></i>
+                </button>
+                <a href="${url_edit}" class="btn btn-icon btn-dark set-tooltip" title="${label_edit}">
+                    <i class='bx bx-edit'></i>
+                </a>
+                <a href="javascript:void(0)" class="btn btn-icon btn-danger" title="${label_delete}" onclick="deleteConfirm('${url_destroy}', false, 'table-brand')">
+                    <i class='bx bx-trash-alt'></i>
+                </a>`
                                 }
                             }
                         ]
@@ -238,14 +242,107 @@
                         const name = $(this).data('name');
                         const description = $(this).data('description');
                         const logo = $(this).data('logo');
+                        const motorCount = $(this).data('motor-count');
 
                         $('#brand-name').text(name);
                         $('#brand-description').text(description);
                         $('#brand-logo').attr('src', logo);
+                        $('#brand-motor-count').text(motorCount);
 
                         $('#showBrandModal').modal('show');
                     });
                     $($.fn.dataTable.tables(true)).css('width', '100%')
+                });
+                window.LaravelDataTables = window.LaravelDataTables || {}
+                window.LaravelDataTables["table-brand"] = $("#table-brand").DataTable({
+                    dom: 'fltpr',
+                    language: {
+                        search: "",
+                        searchPlaceholder: `${label_search}...`,
+                        lengthMenu: "_MENU_ Data",
+                        emptyTable: label_nodata
+                    },
+                    ajax: {
+                        url: "{{ route('brand.datatable') }}",
+                        type: "POST",
+                    },
+                    processing: true,
+                    serverSide: true,
+                    deferRender: true,
+                    ordering: false,
+                    aLengthMenu: [
+                        [10, 25, 50, 100],
+                        [10, 25, 50, 100]
+                    ],
+                    drawCallback: function() {
+                        $(".set-tooltip").tooltip({
+                            container: "body"
+                        })
+                    },
+                    columns: [{
+                            class: "align-middle",
+                            width: "50px",
+                            searchable: false,
+                            render: (data, type, row, meta) => meta.row + meta.settings._iDisplayStart + 1
+                        },
+                        {
+                            class: "align-middle",
+                            render: (data, type, row, meta) => htmlEntities(row.name)
+                        },
+                        {
+                            data: 'logo',
+                            name: 'logo',
+                            render: function(data, type, full, meta) {
+                                return data ? "<img src='" + "{{ asset('storage') }}/" + data +
+                                    "' class='img-fluid' style='max-width: 100px' />" : '';
+                            }
+                        },
+                        {
+                            class: "align-middle text-center",
+                            searchable: false,
+                            render: function(data, type, row) {
+                                let url_show = "{{ route('brand.show', ':id') }}";
+                                let url_edit = "{{ route('brand.edit', ':id') }}";
+                                let url_destroy = "{{ route('brand.destroy', ':id') }}";
+
+                                url_show = url_show.replace(':id', encodeURIComponent(row
+                                    .encrypted_id));
+                                url_edit = url_edit.replace(':id', encodeURIComponent(row
+                                    .encrypted_id));
+                                url_destroy = url_destroy.replace(':id', encodeURIComponent(row
+                                    .encrypted_id));
+
+                                return `
+                                    <button type="button" class="btn btn-icon btn-primary set-tooltip show-brand" 
+                                            data-name="${htmlEntities(row.name)}"
+                                            data-description="${htmlEntities(row.description)}"
+                                            data-logo="${row.image_url}"
+                                            data-motor-count="${row.motor_count}"
+                                            title="${label_show}">
+                                        <i class='bx bxs-user-detail'></i>
+                                    </button>
+                                    <a href="${url_edit}" class="btn btn-icon btn-dark set-tooltip" title="${label_edit}">
+                                        <i class='bx bx-edit'></i>
+                                    </a>
+                                    <a href="javascript:void(0)" class="btn btn-icon btn-danger" title="${label_delete}" onclick="deleteConfirm('${url_destroy}', false, 'table-brand')">
+                                        <i class='bx bx-trash-alt'></i>
+                                    </a>`
+                            }
+                        }
+                    ]
+                })
+                $(document).on('click', '.show-brand', function() {
+                    const name = $(this).data('name');
+                    const description = $(this).data('description');
+                    const logo = $(this).data('logo');
+                    const motorCount = $(this).data('motor-count');
+
+                    $('#brand-name').text(name);
+                    $('#brand-description').text(description);
+                    $('#brand-logo').attr('src', logo);
+                    $('#brand-motor-count').text(motorCount);
+
+                    $('#showBrandModal').modal('show');
                 });
             </script>
         @endpush

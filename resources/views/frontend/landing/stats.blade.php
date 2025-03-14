@@ -1,9 +1,3 @@
-@push('styles')
-    <style>
-        /* Keep your existing styles */
-    </style>
-@endpush
-
 <section>
     <div class="stats-section">
         <div class="container">

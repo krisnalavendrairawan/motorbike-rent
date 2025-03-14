@@ -43,6 +43,7 @@
 </head>
 
 <body>
+
     @include('frontend.layouts.partials.header')
 
     <main class="main-container">

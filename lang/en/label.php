@@ -105,6 +105,12 @@ return [
     'total_transaction' => 'Total Transactions',
     'total_service' => 'Total Services',
     'weekly_report' => 'Weekly Report',
+    'total_bikes' => 'Total Bike',
+    'order_id' => 'Order ID',
+    'payment_time' => 'Payment Time',
+    'total_amount' => 'Total Amount',
+    'payment' => 'Payment',
+    'list-payment' => 'List Payment',
 
 
     // Action

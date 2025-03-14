@@ -72,6 +72,7 @@ class CustomerPageController extends Controller
         $motors = $query->paginate(9);
         $brands = Brand::all();
         $types = Common::option('bike_type');
+        $bike = Motor::all();
 
         if ($request->ajax()) {
             return response()->json([
@@ -80,7 +81,7 @@ class CustomerPageController extends Controller
             ]);
         }
 
-        return view('frontend.catalog.catalog', compact('motors', 'brands', 'types'));
+        return view('frontend.catalog.catalog', compact('motors', 'brands', 'types', 'bike'));
     }
 
     public function show($id)
@@ -177,7 +178,7 @@ class CustomerPageController extends Controller
                 'total_amount' => $rental->total_price,
             ]);
 
-            if (in_array($request->payment_type, ['Qris', 'Transfer'])) {
+            if (in_array($request->payment_type, ['qris', 'transfer'])) {
                 $midtransService = app(MidtransService::class);
                 $snapToken = $midtransService->createTransaction($transaction);
                 $transaction->update(['snap_token' => $snapToken]);

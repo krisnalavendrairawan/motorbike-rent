@@ -11,6 +11,7 @@ use App\Http\Controllers\MotorController;
 use App\Http\Controllers\RentalController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\MonthlyReportController;
+use App\Http\Controllers\PaymentController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ServiceController;
 use App\Http\Controllers\TransactionController;
@@ -29,42 +30,46 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/landing-page', [CustomerPageController::class, 'index'])->name('landing.index');
-Route::get('/catalog', [CustomerPageController::class, 'catalog'])->name('catalog.index');
-Route::get('/catalog/{id}', [CustomerPageController::class, 'show'])->name('catalog.detail');
+Route::get('/', [CustomerPageController::class, 'index'])->name('landing.index');
+// Route::get('/landing-page', [CustomerPageController::class, 'index'])->name('landing.index');
+
 
 
 Route::middleware('guest')->group(function () {
     Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
-    Route::get('/login', [AuthController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [AuthController::class, 'login'])->name('login');
     Route::get('/register-customer', [AuthController::class, 'showRegisterFormCustomer'])->name('customer.register');
     Route::post('register-customer', [AuthController::class, 'registerCustomer'])->name('customer.register.create');
     Route::get('/login-customer', [AuthController::class, 'showLoginFormCustomer'])->name('customer.login.index');
     Route::post('login-customer', [AuthController::class, 'loginCustomer'])->name('customer.login');
-    Route::post('/login', [AuthController::class, 'login']);
 });
 
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
 Route::post('/logout-customer', [AuthController::class, 'logoutCustomer'])->name('customer.logout');
 
-Route::middleware(['auth'])->group(function () {
+Route::middleware(['customer', 'role:customer'])->group(function () {
     Route::get('/customer/profile', [CustomerController::class, 'editProfile'])->name('customer.profile');
     Route::put('/customer/profile', [CustomerController::class, 'updateProfile'])->name('customer.profile.update');
 
+    Route::get('/catalog', [CustomerPageController::class, 'catalog'])->name('catalog.index');
+    Route::get('/catalog/{id}', [CustomerPageController::class, 'show'])->name('catalog.detail');
+
     Route::get('/customer/rental/{id}', [CustomerPageController::class, 'createRental'])->name('customer.rental');
     Route::post('/customer/rental', [CustomerPageController::class, 'store'])->name('customer.rental.store');
-    Route::post('/rental/confirm-payment', [RentalController::class, 'confirmPayment'])->name('rental.confirm-payment');
+    // Route::post('/rental/confirm-payment', [RentalController::class, 'confirmPayment'])->name('rental.confirm-payment');
 
     Route::get('/transactions', [TransactionController::class, 'index'])->name('transaction.index');
     Route::get('/transactions/{transaction}', [TransactionController::class, 'show'])->name('transaction.show');
     Route::post('payments/notification', [TransactionController::class, 'notification'])->name('transaction.notification');
     Route::post('/transaction/{orderId}/update-status', [TransactionController::class, 'updatePaymentStatus'])->name('transaction.update-status');
     Route::get('/transaction/detail/{transaction}', [TransactionController::class, 'detailTransaction'])->name('transaction.detail');
+
+
 });
 
 
 Route::middleware(['auth', 'role:admin'])->group(function () {
-    Route::get('/', [DashboardController::class, 'index'])->name('dashboard.index');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
 
     Route::resource('user', UserController::class)->except(['show']);
@@ -99,10 +104,16 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     Route::get('rental/create/{motor}', [RentalController::class, 'create'])->name('rental.create');
     Route::get('list-rental', [RentalController::class, 'showListRental'])->name('list.rental');
     Route::post('rental/datatable', [RentalController::class, 'datatable'])->name('rental.datatable');
+    Route::post('/rental/confirm-payment', [RentalController::class, 'confirmPayment'])->name('rental.confirm-payment');
+
 
     Route::resource('return', ReturnController::class);
     Route::post('return/datatable', [ReturnController::class, 'datatable'])->name('return.datatable');
     Route::get('admin/return/export-pdf', [ReturnController::class, 'exportPdf'])->name('return.export-pdf');
+
+    Route::get('/payments', [PaymentController::class, 'index'])->name('payment.index');
+    Route::post('/payments/datatable', [PaymentController::class, 'datatable'])->name('payment.datatable');
+    Route::post('/payments/confirm', [PaymentController::class, 'confirm'])->name('payment.confirm');
 
     Route::get('/weekly-report', [WeeklyReportController::class, 'weeklyReport'])->name('weekly-report.index');
 
